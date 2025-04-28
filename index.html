@@ -5,50 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>iChan</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="icon" href="assets/ichan-icon.png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="header-content">
-                <img src="assets/ichan-icon.png" alt="iChan logo" class="header-logo">
-                <h1>iChan</h1>
-            </div>
-            <div class="header-controls">
-                <button id="theme-toggle" aria-label="Toggle dark mode"><i class="fas fa-moon"></i></button>
-            </div>
-        </header>
-        <div class="board-list" id="board-list"></div>
-        <div class="board-view" id="board-view" style="display: none;">
-            <div class="board-header" id="board-header">
-                <button id="back-button" class="back-button" aria-label="Back to boards"><i class="fas fa-arrow-left"></i></button>
-                <div class="board-header-content">
-                    <h2 id="board-title">Board</h2>
-                    <button id="info-button" class="info-button" aria-label="Board info"><i class="fas fa-info-circle"></i></button>
-                </div>
-            </div>
-            <div class="thread-list" id="thread-list"></div>
-            <button id="load-more" class="load-more" style="display: none;">Load More</button>
+    <div id="parallax-bg"></div>
+
+    <!-- Start Page: Boards Showcase -->
+    <div id="boards-page" class="page active">
+        <div class="header">
+            <h1>Boards</h1>
+            <button id="dark-mode-toggle-boards" class="dark-mode-toggle">
+                <i class="fas fa-sun"></i>
+            </button>
         </div>
-        <div class="loader" id="loader"></div>
-        <div class="pull-refresh" id="pull-refresh">Pull to refresh...</div>
+        <div id="boards-list"></div>
     </div>
-    <div id="image-modal" class="modal" style="display: none;">
-        <span class="modal-close"><i class="fas fa-times"></i></span>
-        <img id="modal-image" src="" alt="Full-size image">
-    </div>
-    <div id="board-info-popup" class="board-info-popup" style="display: none;">
-        <span class="popup-close" id="popup-close"><i class="fas fa-times"></i></span>
-        <div class="popup-content">
-            <h3 id="popup-title"></h3>
-            <p id="popup-description"></p>
-            <p id="popup-users-online"></p>
-            <p id="popup-stats"></p>
+
+    <!-- Thread Page: List of Threads -->
+    <div id="threads-page" class="page">
+        <div class="header">
+            <button id="back-to-boards-btn">←</button>
+            <h2 id="board-title"></h2>
+            <button id="dark-mode-toggle-threads" class="dark-mode-toggle">
+                <i class="fas fa-sun"></i>
+            </button>
         </div>
+        <div id="threads-list"></div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+
+    <!-- Thread Detail Page: Messages -->
+    <div id="chat-page" class="page">
+        <div class="header">
+            <button id="back-to-threads-btn">←</button>
+            <h2 id="thread-title"></h2>
+            <button id="dark-mode-toggle-chat" class="dark-mode-toggle">
+                <i class="fas fa-sun"></i>
+            </button>
+        </div>
+        <div id="chat-messages"></div>
+    </div>
+
+    <!-- Modal for Enlarged Image -->
+    <div id="image-modal" class="modal">
+        <img id="modal-image" src="" alt="Enlarged Image">
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>

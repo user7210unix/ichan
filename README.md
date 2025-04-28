@@ -1,6 +1,18 @@
 # iChan
 A Modern, iMessage-Inspired 4chan Client
 
+<div align="center">
+  <img 
+    src="https://logos-world.net/wp-content/uploads/2021/02/4chan-Emblem.png" 
+    alt=" Logo" 
+    width="150" 
+    style="display: block; margin: 0 auto; border: 2px solid #555; border-radius: 12px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);"
+  >
+</div>
+
+
+
+
 A touch-friendly UI with thread view, board/thread search, offline caching, and dark mode. Built with HTML, CSS, and JS.
 
 ## Features

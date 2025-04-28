@@ -11,6 +11,19 @@
 
 
 # iChan
+
+
+
+<div align="center">
+  <h2 style="font-size: 74px;">
+    <strong>
+      <a href="https://user7210unix.github.io/ichan/" style="text-decoration: none; color: inherit;">
+        <img src="https://logos-world.net/wp-content/uploads/2021/02/4chan-Emblem.png" alt="" style="vertical-align: middle; width: 44px; height: 44px; margin-right: 8px;">
+       iChan
+      </a>
+    </strong>
+  </h2>
+
 ## A Modern, iMessage-Inspired 4chan Client
 
 

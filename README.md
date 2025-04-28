@@ -38,3 +38,12 @@ A touch-friendly UI with thread view, board/thread search, offline caching, and 
 
 ## HINT ON GITHUB THERE IS NO IMAGE SUPPORT SO IF U WANT IMAGE SUPPORT LOCAL HOST THE SITE
 with just cloning the repo and access the site that way
+
+<div align="center">
+  <h2 style="font-size: 74px;">
+    <strong>
+      <a href="https://cors-anywhere.herokuapp.com/corsdemo" style="text-decoration: none; color: inherit;">
+       Get Access
+      </a>
+    </strong>
+  </h2>

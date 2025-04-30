@@ -1,3 +1,4 @@
+// DOM Elements
 const boardsPage = document.getElementById('boards-page');
 const threadsPage = document.getElementById('threads-page');
 const chatPage = document.getElementById('chat-page');
@@ -8,14 +9,6 @@ const boardTitle = document.getElementById('board-title');
 const threadsList = document.getElementById('threads-list');
 const threadTitle = document.getElementById('thread-title');
 const chatMessages = document.getElementById('chat-messages');
-const galleryView = document.getElementById('gallery-view');
-const galleryImages = document.getElementById('gallery-images');
-const galleryPrev = document.getElementById('gallery-prev');
-const galleryNext = document.getElementById('gallery-next');
-const galleryClose = document.getElementById('gallery-close');
-const backToBoardsBtn = document.getElementById('back-to-boards-btn');
-const backToThreadsBtn = document.getElementById('back-to-threads-btn');
-const galleryModeToggle = document.getElementById('gallery-mode-toggle');
 const imageModal = document.getElementById('image-modal');
 const modalImage = document.getElementById('modal-image');
 const zoomImagePreview = document.getElementById('zoom-image-preview');
@@ -27,15 +20,15 @@ const settingsClose = document.getElementById('settings-close');
 const hoverZoomToggle = document.getElementById('hover-zoom-toggle');
 const darkModeToggleSettings = document.getElementById('dark-mode-toggle-settings');
 const favoriteBoardsSelector = document.getElementById('favorite-boards-selector');
+const backToBoardsBtn = document.getElementById('back-to-boards-btn');
+const backToThreadsBtn = document.getElementById('back-to-threads-btn');
 
 const CORS_PROXY = 'https://cors-anywhere.herokuapp.com/';
+const API_BASE = 'https://a.4cdn.org/';
 
 // Current date for comparison
 const CURRENT_DATE = new Date('2025-04-28');
 
-let currentImages = [];
-let currentImageIndex = 0;
-let isGalleryMode = false;
 let settings = {
     hoverZoom: true,
     darkMode: false,
@@ -60,38 +53,41 @@ function saveSettings() {
 function applySettings() {
     if (settings.darkMode) {
         document.body.classList.add('dark-mode');
-        const toggles = [darkModeToggleSettings, darkModeToggleThreads, darkModeToggleChat];
-        toggles.forEach(toggle => {
+        [darkModeToggleSettings, darkModeToggleThreads, darkModeToggleChat].forEach(toggle => {
             if (toggle) toggle.innerHTML = '<i class="fas fa-moon"></i>';
         });
     } else {
         document.body.classList.remove('dark-mode');
-        const toggles = [darkModeToggleSettings, darkModeToggleThreads, darkModeToggleChat];
-        toggles.forEach(toggle => {
+        [darkModeToggleSettings, darkModeToggleThreads, darkModeToggleChat].forEach(toggle => {
             if (toggle) toggle.innerHTML = '<i class="fas fa-sun"></i>';
         });
     }
-    hoverZoomToggle.checked = settings.hoverZoom;
+    if (hoverZoomToggle) hoverZoomToggle.checked = settings.hoverZoom;
 }
 
 // Fetch all boards dynamically
 async function fetchBoards() {
     try {
-        const response = await fetch(`${CORS_PROXY}https://a.4cdn.org/boards.json`);
+        const response = await fetch(`${CORS_PROXY}${API_BASE}boards.json`);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
-        return data.boards;
+        return data.boards || [];
     } catch (error) {
         console.error('Error fetching boards:', error);
+        if (boardsList) {
+            boardsList.innerHTML = '<div>Error loading boards. Please try again later.</div>';
+        }
         return [];
     }
 }
 
 // Load boards on start page
 async function loadBoards() {
+    if (!boardsList || !favoriteBoardsList || !favoriteBoardsSection) return;
     const boards = await fetchBoards();
     boardsList.innerHTML = '';
     favoriteBoardsList.innerHTML = '';
-    
+
     // Display favorite boards
     const favoriteBoards = boards.filter(board => settings.favoriteBoards.includes(board.board));
     if (favoriteBoards.length > 0) {
@@ -111,33 +107,35 @@ async function loadBoards() {
     });
 
     // Populate favorite boards selector
-    favoriteBoardsSelector.innerHTML = '';
-    boards.forEach(board => {
-        const item = document.createElement('div');
-        item.classList.add('favorite-board-item');
-        item.innerHTML = `
-            <span>${board.title}</span>
-            <input type="checkbox" data-board="${board.board}" ${settings.favoriteBoards.includes(board.board) ? 'checked' : ''}>
-        `;
-        favoriteBoardsSelector.appendChild(item);
-    });
-
-    // Add event listeners to checkboxes
-    const checkboxes = favoriteBoardsSelector.querySelectorAll('input[type="checkbox"]');
-    checkboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', () => {
-            const boardCode = checkbox.getAttribute('data-board');
-            if (checkbox.checked) {
-                if (!settings.favoriteBoards.includes(boardCode)) {
-                    settings.favoriteBoards.push(boardCode);
-                }
-            } else {
-                settings.favoriteBoards = settings.favoriteBoards.filter(code => code !== boardCode);
-            }
-            saveSettings();
-            loadBoards();
+    if (favoriteBoardsSelector) {
+        favoriteBoardsSelector.innerHTML = '';
+        boards.forEach(board => {
+            const item = document.createElement('div');
+            item.classList.add('favorite-board-item');
+            item.innerHTML = `
+                <span>${board.title}</span>
+                <input type="checkbox" data-board="${board.board}" ${settings.favoriteBoards.includes(board.board) ? 'checked' : ''}>
+            `;
+            favoriteBoardsSelector.appendChild(item);
         });
-    });
+
+        // Add event listeners to checkboxes
+        const checkboxes = favoriteBoardsSelector.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                const boardCode = checkbox.getAttribute('data-board');
+                if (checkbox.checked) {
+                    if (!settings.favoriteBoards.includes(boardCode)) {
+                        settings.favoriteBoards.push(boardCode);
+                    }
+                } else {
+                    settings.favoriteBoards = settings.favoriteBoards.filter(code => code !== boardCode);
+                }
+                saveSettings();
+                loadBoards();
+            });
+        });
+    }
 }
 
 // Create board item
@@ -156,35 +154,36 @@ function createBoardItem(board) {
 
 // Switch to threads page
 function openThreads(board) {
+    if (!boardsPage || !threadsPage || !boardTitle) return;
     boardsPage.classList.remove('active');
     threadsPage.classList.add('active');
     boardTitle.textContent = board.title;
-    threadsList.innerHTML = '';
+    if (threadsList) threadsList.innerHTML = '';
     fetchThreads(board.board);
 }
 
 // Fetch threads from 4chan board
 async function fetchThreads(boardCode) {
+    if (!threadsList) return;
     try {
-        const response = await fetch(`${CORS_PROXY}https://a.4cdn.org/${boardCode}/catalog.json`);
+        const response = await fetch(`${CORS_PROXY}${API_BASE}${boardCode}/catalog.json`);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         displayThreads(data, boardCode);
     } catch (error) {
         console.error('Error fetching threads:', error);
-        const message = document.createElement('div');
-        message.textContent = 'Error loading threads.';
-        threadsList.appendChild(message);
+        threadsList.innerHTML = '<div>Error loading threads.</div>';
     }
 }
 
 // Display threads
 function displayThreads(data, boardCode) {
+    if (!threadsList) return;
     data.forEach(page => {
         page.threads.forEach(thread => {
             const threadItem = document.createElement('div');
             threadItem.classList.add('thread-item');
 
-            // Add thumbnail if OP has image
             if (thread.tim && thread.ext) {
                 const img = document.createElement('img');
                 img.src = `https://t.4cdn.org/${boardCode}/${thread.tim}s.jpg`;
@@ -192,7 +191,6 @@ function displayThreads(data, boardCode) {
                 threadItem.appendChild(img);
             }
 
-            // Thread title or subject
             const contentDiv = document.createElement('div');
             contentDiv.classList.add('content');
 
@@ -217,26 +215,20 @@ function displayThreads(data, boardCode) {
 
 // Open thread detail page
 async function openThread(boardCode, thread) {
+    if (!threadsPage || !chatPage || !threadTitle || !chatMessages) return;
     threadsPage.classList.remove('active');
     chatPage.classList.add('active');
     threadTitle.textContent = thread.sub || `Thread #${thread.no}`;
     chatMessages.innerHTML = '';
-    galleryImages.innerHTML = '';
-    currentImages = [];
-    currentImageIndex = 0;
-    isGalleryMode = false;
-    galleryView.classList.remove('active');
-    chatMessages.style.display = 'block';
 
     try {
-        const response = await fetch(`${CORS_PROXY}https://a.4cdn.org/${boardCode}/thread/${thread.no}.json`);
+        const response = await fetch(`${CORS_PROXY}${API_BASE}${boardCode}/thread/${thread.no}.json`);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         displayMessages(boardCode, data.posts);
     } catch (error) {
         console.error('Error fetching thread messages:', error);
-        const message = document.createElement('div');
-        message.textContent = 'Error loading messages.';
-        chatMessages.appendChild(message);
+        chatMessages.innerHTML = `<div>Error loading messages: ${error.message}</div>`;
     }
 }
 
@@ -263,77 +255,79 @@ function formatTimestamp(unixTime) {
 
 // Display messages in thread
 function displayMessages(boardCode, posts) {
+    if (!chatMessages) return;
     const postMap = new Map();
-    const repliesMap = new Map();
 
-    // Initialize replies map
+    // Initialize post map
     posts.forEach(post => {
         postMap.set(post.no, post);
-        repliesMap.set(post.no, []);
     });
 
-    // Collect replies
+    // Display all posts
     posts.forEach(post => {
-        if (post.com && post.com.includes('>>')) {
-            const replyRegex = />>(\d+)/g;
-            let match;
-            while ((match = replyRegex.exec(post.com)) !== null) {
-                const postNo = parseInt(match[1]);
-                if (repliesMap.has(postNo)) {
-                    repliesMap.get(postNo).push(post);
-                }
-            }
-        }
-    });
-
-    posts.forEach(post => {
-        if (!post.com || !post.com.includes('>>')) {
-            appendMessageWithReplies(boardCode, post, repliesMap, postMap);
-        }
+        appendMessageWithReplies(boardCode, post, postMap);
     });
 
     chatMessages.scrollTop = chatMessages.scrollHeight;
-
-    // Populate gallery images
-    showGalleryImage(currentImageIndex);
 }
 
 // Append message and its replies
-function appendMessageWithReplies(boardCode, post, repliesMap, postMap) {
+function appendMessageWithReplies(boardCode, post, postMap) {
+    if (!chatMessages) return;
     const message = document.createElement('div');
     message.id = `post-${post.no}`;
-    message.classList.add('message', 'received');
+    const isReply = post.com && post.com.trim().startsWith('>>');
+    message.classList.add('message', isReply ? 'reply' : 'received'); // Fixed typo: isRefply -> isReply
 
-    let commentHtml = post.com ? post.com.replace(/<[^>]+>/g, '') : 'No comment';
-
-    // Process reply links
-    if (commentHtml.includes('>>')) {
+    // Process comment
+    let commentHtml = '';
+    if (post.com) {
+        commentHtml = post.com.replace(/<[^>]+>/g, '');
+        // Convert >> links to clickable spans
         const replyRegex = />>(\d+)/g;
-        let match;
-        while ((match = replyRegex.exec(commentHtml)) !== null) {
-            const postNo = match[1];
-            commentHtml = commentHtml.replace(
-                match[0],
-                `<span class="reply-link" data-post-no="${postNo}">${match[0]}</span>`
-            );
+        commentHtml = commentHtml.replace(replyRegex, (match, postNo) => {
+            return `<span class="reply-link" data-post-no="${postNo}">${match}</span>`;
+        });
+    }
+
+    // Create preview for replies
+    let previewHtml = '';
+    if (isReply) {
+        const replyMatch = post.com.match(/>>(\d+)/);
+        if (replyMatch) {
+            const referencedPostNo = parseInt(replyMatch[1]);
+            const referencedPost = postMap.get(referencedPostNo);
+            if (referencedPost) {
+                let previewText = referencedPost.com ? referencedPost.com.replace(/<[^>]+>/g, '').substring(0, 50) : '';
+                if (previewText.length > 50) previewText += '...';
+                previewHtml = `<div class="reply-preview">`;
+                if (referencedPost.tim && referencedPost.ext) {
+                    const previewImgUrl = `https://i.4cdn.org/${boardCode}/${referencedPost.tim}${referencedPost.ext}`;
+                    previewHtml += `<img src="${previewImgUrl}" onerror="this.style.display='none'">`;
+                }
+                previewHtml += `${previewText}</div>`;
+            }
         }
     }
 
+    // Build message HTML
     let html = `
-        <div class="username">${post.name || 'Anonymous'}<span class="timestamp">${formatTimestamp(post.time)}</span></div>
-        <div>${commentHtml}</div>
+        <div class="username">${post.name || 'Anonymous'} #${post.no}<span class="timestamp">${formatTimestamp(post.time)}</span></div>
     `;
+    if (commentHtml && !(post.tim && post.ext && !post.com)) {
+        // Show comment unless it's an image-only post
+        html += `<div>${commentHtml}</div>`;
+    }
     if (post.tim && post.ext) {
         const imgUrl = `https://i.4cdn.org/${boardCode}/${post.tim}${post.ext}`;
         html += `<img src="${imgUrl}" data-fullsrc="${imgUrl}" onerror="this.style.display='none'">`;
-        currentImages.push(imgUrl);
     }
-    message.innerHTML = html;
+    message.innerHTML = previewHtml + html;
 
-    // Add click event to images for enlarging
+    // Add event listeners
     const img = message.querySelector('img');
     if (img) {
-        img.addEventListener('click', () => openImageModal(imgUrl));
+        img.addEventListener('click', () => openImageModal(img.getAttribute('data-fullsrc') || img.src));
         if (settings.hoverZoom) {
             img.addEventListener('mouseenter', () => showZoomPreview(img));
             img.addEventListener('mouseleave', hideZoomPreview);
@@ -341,7 +335,6 @@ function appendMessageWithReplies(boardCode, post, repliesMap, postMap) {
         }
     }
 
-    // Add click event to reply links
     const replyLinks = message.querySelectorAll('.reply-link');
     replyLinks.forEach(link => {
         link.addEventListener('click', () => {
@@ -351,120 +344,35 @@ function appendMessageWithReplies(boardCode, post, repliesMap, postMap) {
     });
 
     chatMessages.appendChild(message);
-
-    // Append replies
-    const replies = repliesMap.get(post.no);
-    if (replies.length > 0) {
-        const repliesContainer = document.createElement('div');
-        repliesContainer.classList.add('replies-container');
-        replies.forEach(reply => {
-            const replyMessage = document.createElement('div');
-            replyMessage.id = `post-${reply.no}`;
-            replyMessage.classList.add('message', 'reply');
-
-            let replyCommentHtml = reply.com ? reply.com.replace(/<[^>]+>/g, '') : 'No comment';
-            if (replyCommentHtml.includes('>>')) {
-                const replyRegex = />>(\d+)/g;
-                let match;
-                while ((match = replyRegex.exec(replyCommentHtml)) !== null) {
-                    const postNo = match[1];
-                    replyCommentHtml = replyCommentHtml.replace(
-                        match[0],
-                        `<span class="reply-link" data-post-no="${postNo}">${match[0]}</span>`
-                    );
-                }
-            }
-
-            let replyHtml = `
-                <div class="username">${reply.name || 'Anonymous'}<span class="timestamp">${formatTimestamp(reply.time)}</span></div>
-                <div>${replyCommentHtml}</div>
-            `;
-            if (reply.tim && reply.ext) {
-                const imgUrl = `https://i.4cdn.org/${boardCode}/${reply.tim}${reply.ext}`;
-                replyHtml += `<img src="${imgUrl}" data-fullsrc="${imgUrl}" onerror="this.style.display='none'">`;
-                currentImages.push(imgUrl);
-            }
-            replyMessage.innerHTML = replyHtml;
-
-            const replyImg = replyMessage.querySelector('img');
-            if (replyImg) {
-                replyImg.addEventListener('click', () => openImageModal(imgUrl));
-                if (settings.hoverZoom) {
-                    replyImg.addEventListener('mouseenter', () => showZoomPreview(replyImg));
-                    replyImg.addEventListener('mouseleave', hideZoomPreview);
-                    replyImg.addEventListener('mousemove', moveZoomPreview);
-                }
-            }
-
-            const replyLinks = replyMessage.querySelectorAll('.reply-link');
-            replyLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    const postNo = link.getAttribute('data-post-no');
-                    scrollToPost(postNo);
-                });
-            });
-
-            repliesContainer.appendChild(replyMessage);
-        });
-        chatMessages.appendChild(repliesContainer);
-    }
-}
-
-// Toggle gallery mode
-function toggleGalleryMode() {
-    isGalleryMode = !isGalleryMode;
-    galleryView.classList.toggle('active', isGalleryMode);
-    chatMessages.style.display = isGalleryMode ? 'none' : 'block';
-    galleryModeToggle.innerHTML = isGalleryMode ? '<i class="fas fa-comments"></i>' : '<i class="fas fa-images"></i>';
-    if (isGalleryMode) {
-        currentImageIndex = 0;
-        showGalleryImage(currentImageIndex);
-    }
-}
-
-// Show specific gallery image
-function showGalleryImage(index) {
-    if (currentImages.length === 0) {
-        galleryImages.innerHTML = '<div>No images in this thread.</div>';
-        return;
-    }
-    currentImageIndex = (index + currentImages.length) % currentImages.length;
-    galleryImages.innerHTML = '';
-    const img = document.createElement('img');
-    img.src = currentImages[currentImageIndex];
-    img.classList.add('gallery-image');
-    img.addEventListener('click', () => openImageModal(currentImages[currentImageIndex]));
-    galleryImages.appendChild(img);
 }
 
 // Zoom preview functions
 function showZoomPreview(img) {
-    if (!settings.hoverZoom) return;
+    if (!settings.hoverZoom || !zoomImagePreview) return;
     const fullSrc = img.getAttribute('data-fullsrc') || img.src;
     zoomImagePreview.innerHTML = `<img src="${fullSrc}">`;
     zoomImagePreview.style.display = 'block';
 }
 
 function hideZoomPreview() {
+    if (!zoomImagePreview) return;
     zoomImagePreview.style.display = 'none';
     zoomImagePreview.innerHTML = '';
 }
 
 function moveZoomPreview(e) {
-    if (!settings.hoverZoom) return;
+    if (!settings.hoverZoom || !zoomImagePreview) return;
     const preview = zoomImagePreview.querySelector('img');
     if (!preview) return;
 
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
     const previewRect = preview.getBoundingClientRect();
-    const offset = 10; // Small offset from cursor
+    const offset = 10;
 
-    // Center the image around the cursor
     let left = e.pageX - previewRect.width / 2;
     let top = e.pageY - previewRect.height / 2;
 
-    // Ensure preview stays within viewport
     if (left < 10) left = 10;
     if (top < 10) top = 10;
     if (left + previewRect.width > viewportWidth - 10) {
@@ -492,11 +400,13 @@ function scrollToPost(postNo) {
 
 // Image Modal Functions
 function openImageModal(src) {
+    if (!modalImage || !imageModal) return;
     modalImage.src = src;
     imageModal.classList.add('active');
 }
 
 function closeImageModal() {
+    if (!modalImage || !imageModal) return;
     imageModal.classList.remove('active');
     modalImage.src = '';
 }
@@ -510,54 +420,61 @@ function toggleDarkMode() {
 
 // Toggle Settings Popup
 function toggleSettingsPopup() {
+    if (!settingsPopup) return;
     settingsPopup.classList.toggle('active');
 }
 
 // Event Listeners
-backToBoardsBtn.addEventListener('click', () => {
-    threadsPage.classList.remove('active');
-    boardsPage.classList.add('active');
-});
+if (backToBoardsBtn) {
+    backToBoardsBtn.addEventListener('click', () => {
+        if (!threadsPage || !boardsPage) return;
+        threadsPage.classList.remove('active');
+        boardsPage.classList.add('active');
+    });
+}
 
-backToThreadsBtn.addEventListener('click', () => {
-    chatPage.classList.remove('active');
-    threadsPage.classList.add('active');
-});
+if (backToThreadsBtn) {
+    backToThreadsBtn.addEventListener('click', () => {
+        if (!chatPage || !threadsPage) return;
+        chatPage.classList.remove('active');
+        threadsPage.classList.add('active');
+    });
+}
 
-imageModal.addEventListener('click', (e) => {
-    if (e.target === imageModal) {
-        closeImageModal();
-    }
-});
+if (imageModal) {
+    imageModal.addEventListener('click', (e) => {
+        if (e.target === imageModal) {
+            closeImageModal();
+        }
+    });
+}
 
-galleryView.addEventListener('click', (e) => {
-    if (e.target === galleryView) {
-        toggleGalleryMode();
-    }
-});
+if (darkModeToggleThreads) {
+    darkModeToggleThreads.addEventListener('click', toggleDarkMode);
+}
 
-galleryClose.addEventListener('click', toggleGalleryMode);
+if (darkModeToggleChat) {
+    darkModeToggleChat.addEventListener('click', toggleDarkMode);
+}
 
-darkModeToggleThreads.addEventListener('click', toggleDarkMode);
-darkModeToggleChat.addEventListener('click', toggleDarkMode);
-darkModeToggleSettings.addEventListener('click', toggleDarkMode);
-settingsToggleBoards.addEventListener('click', toggleSettingsPopup);
-settingsClose.addEventListener('click', toggleSettingsPopup);
+if (darkModeToggleSettings) {
+    darkModeToggleSettings.addEventListener('click', toggleDarkMode);
+}
 
-hoverZoomToggle.addEventListener('change', () => {
-    settings.hoverZoom = hoverZoomToggle.checked;
-    saveSettings();
-});
+if (settingsToggleBoards) {
+    settingsToggleBoards.addEventListener('click', toggleSettingsPopup);
+}
 
-galleryPrev.addEventListener('click', (e) => {
-    e.stopPropagation();
-    showGalleryImage(currentImageIndex - 1);
-});
+if (settingsClose) {
+    settingsClose.addEventListener('click', toggleSettingsPopup);
+}
 
-galleryNext.addEventListener('click', (e) => {
-    e.stopPropagation();
-    showGalleryImage(currentImageIndex + 1);
-});
+if (hoverZoomToggle) {
+    hoverZoomToggle.addEventListener('change', () => {
+        settings.hoverZoom = hoverZoomToggle.checked;
+        saveSettings();
+    });
+}
 
 // Initialize
 loadSettings();

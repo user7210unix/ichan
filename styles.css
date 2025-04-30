@@ -60,7 +60,9 @@ h1, h2 {
 .header {
     position: sticky;
     top: 0;
-    background-color: #fff;
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     padding: 10px 15px;
     display: flex;
     align-items: center;
@@ -70,7 +72,7 @@ h1, h2 {
 }
 
 body.dark-mode .header {
-    background-color: #2a2a2a;
+    background-color: rgba(42, 42, 42, 0.8);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
@@ -86,12 +88,12 @@ body.dark-mode .header {
     gap: 10px;
 }
 
-.dark-mode-toggle, .gallery-mode-toggle, .settings-toggle {
+.dark-mode-toggle, .settings-toggle {
     font-size: 20px;
     transition: transform 0.3s ease;
 }
 
-.dark-mode-toggle:hover, .gallery-mode-toggle:hover, .settings-toggle:hover {
+.dark-mode-toggle:hover, .settings-toggle:hover {
     transform: scale(1.1);
 }
 
@@ -211,12 +213,26 @@ body.dark-mode .thread-item:hover {
 
 .message {
     max-width: 80%;
-    padding: 10px 15px;
-    margin: 8px 0;
+    padding: 12px 16px; /* Increased padding for readability */
+    margin: 12px 0; /* More space between messages */
     border-radius: 15px;
     word-wrap: break-word;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25), 0 3px 10px rgba(0, 0, 0, 0.15); /* Darker, lower opacity shadow */
+    border: 1px solid rgba(0, 0, 0, 0.1); /* Light border for 3D effect */
     position: relative;
+    transform: translateY(0);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    font-size: 14px; /* Improved readability */
+    line-height: 1.5; /* Better text spacing */
+}
+
+body.dark-mode .message {
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Light border in dark mode */
+}
+
+.message:hover {
+    transform: translateY(-2px) scale(1.02); /* Enhanced 3D hover effect */
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.2); /* Deeper shadow on hover */
 }
 
 .message.received {
@@ -246,6 +262,10 @@ body.dark-mode .message.received {
     font-size: 12px;
     color: #007aff;
     margin-bottom: 5px;
+}
+
+body.dark-mode .message .username {
+    color: #66b0ff;
 }
 
 .message .timestamp {
@@ -282,91 +302,30 @@ body.dark-mode .replies-container {
     border-left-color: #66b0ff;
 }
 
-/* Gallery View */
-.gallery-view {
-    display: none;
-    padding: 15px;
-    max-width: 800px;
-    margin: 0 auto;
-    position: relative;
-    height: calc(100vh - 60px);
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(0, 0, 0, 0.85);
-}
-
-.gallery-view.active {
-    display: flex;
-}
-
-#gallery-images {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-}
-
-.gallery-image {
+.reply-preview {
+    background-color: #f0f0f0;
+    padding: 5px 10px;
+    border-radius: 8px;
+    margin-bottom: 5px;
+    font-size: 10px;
+    color: #666;
     max-width: 100%;
-    max-height: 80vh;
-    width: auto;
-    height: auto;
-    object-fit: contain;
-    border-radius: 10px;
-    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.gallery-nav {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: rgba(0, 0, 0, 0.7);
-    color: white;
-    border: none;
-    padding: 15px;
-    font-size: 30px;
-    cursor: pointer;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+body.dark-mode .reply-preview {
+    background-color: #3a3a3a;
+    color: #aaa;
 }
 
-.gallery-nav:hover {
-    background-color: rgba(0, 0, 0, 0.9);
-}
-
-#gallery-prev {
-    left: 20px;
-}
-
-#gallery-next {
-    right: 20px;
-}
-
-.gallery-close {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background-color: rgba(0, 0, 0, 0.7);
-    color: white;
-    border: none;
-    padding: 10px;
-    font-size: 24px;
-    cursor: pointer;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.gallery-close:hover {
-    background-color: rgba(0, 0, 0, 0.9);
+.reply-preview img {
+    max-width: 40px;
+    max-height: 40px;
+    opacity: 0.5;
+    vertical-align: middle;
+    margin-right: 5px;
 }
 
 /* Zoom Image Preview */
@@ -517,35 +476,27 @@ body.dark-mode .settings-content {
     }
 
     .message {
-        padding: 8px 12px;
+        padding: 10px 12px;
         max-width: 90%;
+        margin: 10px 0; /* Adjusted for mobile */
     }
 
     .message .username, .message .timestamp {
         font-size: 10px;
     }
 
-    .gallery-image {
-        max-height: 70vh;
-    }
-
-    .gallery-nav {
-        font-size: 24px;
-        padding: 12px;
-        width: 40px;
-        height: 40px;
-    }
-
-    .gallery-close {
-        font-size: 20px;
-        padding: 8px;
-        width: 32px;
-        height: 32px;
-    }
-
     .replies-container {
         margin-left: 10px;
         padding-left: 5px;
+    }
+
+    .reply-preview {
+        font-size: 9px;
+    }
+
+    .reply-preview img {
+        max-width: 30px;
+        max-height: 30px;
     }
 
     .zoom-image-preview img {
@@ -557,7 +508,7 @@ body.dark-mode .settings-content {
 }
 
 @media (min-width: 769px) {
-    #boards-list, #threads-list, #chat-messages, #gallery-images {
+    #boards-list, #threads-list, #chat-messages {
         max-width: 800px;
         margin: 0 auto;
     }

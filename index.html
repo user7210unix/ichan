@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>iChan</title>
     <link rel="stylesheet" href="styles.css">
-       <link rel="icon" href="assets/images/favico.png" type="image/png">
+    <link rel="icon" href="assets/images/favico.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body>
@@ -51,21 +51,12 @@
             <button id="back-to-threads-btn">←</button>
             <h2 id="thread-title"></h2>
             <div class="header-buttons">
-                <button id="gallery-mode-toggle" class="gallery-mode-toggle">
-                    <i class="fas fa-images"></i>
-                </button>
                 <button id="dark-mode-toggle-chat" class="dark-mode-toggle">
                     <i class="fas fa-sun"></i>
                 </button>
             </div>
         </div>
         <div id="chat-messages"></div>
-        <div id="gallery-view" class="gallery-view">
-            <button id="gallery-close" class="gallery-close"><i class="fas fa-times"></i></button>
-            <button id="gallery-prev" class="gallery-nav"><i class="fas fa-chevron-left"></i></button>
-            <div id="gallery-images"></div>
-            <button id="gallery-next" class="gallery-nav"><i class="fas fa-chevron-right"></i></button>
-        </div>
     </div>
 
     <!-- Modal for Enlarged Image -->
@@ -98,6 +89,6 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script defer src="script.js"></script>
 </body>
 </html>

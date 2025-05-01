@@ -27,7 +27,7 @@ const CORS_PROXY = 'https://cors-anywhere.herokuapp.com/';
 const API_BASE = 'https://a.4cdn.org/';
 
 // Current date for comparison
-const CURRENT_DATE = new Date('2025-04-28');
+const CURRENT_DATE = new Date('2025-05-01');
 
 let settings = {
     hoverZoom: true,
@@ -65,30 +65,136 @@ function applySettings() {
     if (hoverZoomToggle) hoverZoomToggle.checked = settings.hoverZoom;
 }
 
+// Throttle function for performance
+function throttle(func, limit) {
+    let inThrottle;
+    return function (...args) {
+        if (!inThrottle) {
+            func.apply(this, args);
+            inThrottle = true;
+            setTimeout(() => (inThrottle = false), limit);
+        }
+    };
+}
+
+// Header Scroll Behavior
+let lastScrollTop = 0;
+function handleScroll() {
+    const headers = document.querySelectorAll('.header');
+    const activePage = document.querySelector('.page.active');
+    if (!activePage) return;
+    
+    const scrollTop = activePage.scrollTop || window.pageYOffset || document.documentElement.scrollTop;
+
+    headers.forEach(header => {
+        if (scrollTop > lastScrollTop && scrollTop > 50) {
+            header.classList.add('hidden');
+        } else {
+            header.classList.remove('hidden');
+        }
+    });
+
+    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+}
+
+// Attach scroll listener to each page
+[boardsPage, threadsPage, chatPage].forEach(page => {
+    if (page) {
+        page.addEventListener('scroll', throttle(handleScroll, 100));
+    }
+});
+
 // Fetch all boards dynamically
 async function fetchBoards() {
     try {
         const response = await fetch(`${CORS_PROXY}${API_BASE}boards.json`);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
+        console.log('Boards fetched successfully:', data.boards);
         return data.boards || [];
     } catch (error) {
         console.error('Error fetching boards:', error);
         if (boardsList) {
-            boardsList.innerHTML = '<div>Error loading boards. Please try again later.</div>';
+            boardsList.innerHTML = `<div>Error loading boards: ${error.message}. Please try again later or ensure CORS proxy is active.</div>`;
         }
         return [];
     }
 }
 
+// Search Functionality
+let allBoards = [];
+
+async function initializeSearch() {
+    allBoards = await fetchBoards();
+    console.log('Search initialized with boards:', allBoards);
+    const boardSearch = document.getElementById('board-search');
+    const searchSuggestions = document.getElementById('search-suggestions');
+
+    if (!boardSearch || !searchSuggestions) {
+        console.error('Search elements not found');
+        return;
+    }
+
+    boardSearch.addEventListener('input', throttle(() => {
+        const query = boardSearch.value.toLowerCase().trim();
+        searchSuggestions.innerHTML = '';
+
+        if (query.length === 0) {
+            searchSuggestions.classList.remove('active');
+            return;
+        }
+
+        const filteredBoards = allBoards.filter(board =>
+            board.title.toLowerCase().includes(query) ||
+            board.board.toLowerCase().includes(query) ||
+            (board.meta_description && board.meta_description.toLowerCase().includes(query))
+        );
+
+        if (filteredBoards.length > 0) {
+            filteredBoards.forEach(board => {
+                const suggestion = document.createElement('div');
+                suggestion.classList.add('suggestion-item');
+                suggestion.innerHTML = `
+                    <span>${board.title}</span>
+                    <p>${board.meta_description || 'No description'}</p>
+                `;
+                suggestion.addEventListener('click', () => {
+                    boardSearch.value = '';
+                    searchSuggestions.classList.remove('active');
+                    openThreads(board);
+                });
+                searchSuggestions.appendChild(suggestion);
+            });
+            searchSuggestions.classList.add('active');
+        } else {
+            searchSuggestions.classList.remove('active');
+        }
+    }, 200));
+
+    document.addEventListener('click', (e) => {
+        if (!searchSuggestions.contains(e.target) && e.target !== boardSearch) {
+            searchSuggestions.classList.remove('active');
+        }
+    });
+
+    boardSearch.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && searchSuggestions.children.length > 0) {
+            const firstSuggestion = searchSuggestions.children[0];
+            firstSuggestion.click();
+        }
+    });
+}
+
 // Load boards on start page
 async function loadBoards() {
-    if (!boardsList || !favoriteBoardsList || !favoriteBoardsSection) return;
+    if (!boardsList || !favoriteBoardsList || !favoriteBoardsSection) {
+        console.error('Board list elements not found');
+        return;
+    }
     const boards = await fetchBoards();
     boardsList.innerHTML = '';
     favoriteBoardsList.innerHTML = '';
 
-    // Display favorite boards
     const favoriteBoards = boards.filter(board => settings.favoriteBoards.includes(board.board));
     if (favoriteBoards.length > 0) {
         favoriteBoardsSection.classList.add('active');
@@ -100,13 +206,11 @@ async function loadBoards() {
         favoriteBoardsSection.classList.remove('active');
     }
 
-    // Display all boards
     boards.forEach(board => {
         const boardItem = createBoardItem(board);
         boardsList.appendChild(boardItem);
     });
 
-    // Populate favorite boards selector
     if (favoriteBoardsSelector) {
         favoriteBoardsSelector.innerHTML = '';
         boards.forEach(board => {
@@ -119,7 +223,6 @@ async function loadBoards() {
             favoriteBoardsSelector.appendChild(item);
         });
 
-        // Add event listeners to checkboxes
         const checkboxes = favoriteBoardsSelector.querySelectorAll('input[type="checkbox"]');
         checkboxes.forEach(checkbox => {
             checkbox.addEventListener('change', () => {
@@ -136,6 +239,8 @@ async function loadBoards() {
             });
         });
     }
+
+    initializeSearch();
 }
 
 // Create board item
@@ -152,14 +257,16 @@ function createBoardItem(board) {
     return boardItem;
 }
 
-// Switch to threads page
+// Switch to threads page with fade
 function openThreads(board) {
     if (!boardsPage || !threadsPage || !boardTitle) return;
     boardsPage.classList.remove('active');
-    threadsPage.classList.add('active');
-    boardTitle.textContent = board.title;
-    if (threadsList) threadsList.innerHTML = '';
-    fetchThreads(board.board);
+    setTimeout(() => {
+        threadsPage.classList.add('active');
+        boardTitle.textContent = board.title;
+        if (threadsList) threadsList.innerHTML = '';
+        fetchThreads(board.board);
+    }, 300);
 }
 
 // Fetch threads from 4chan board
@@ -172,7 +279,7 @@ async function fetchThreads(boardCode) {
         displayThreads(data, boardCode);
     } catch (error) {
         console.error('Error fetching threads:', error);
-        threadsList.innerHTML = '<div>Error loading threads.</div>';
+        threadsList.innerHTML = `<div>Error loading threads: ${error.message}</div>`;
     }
 }
 
@@ -213,16 +320,22 @@ function displayThreads(data, boardCode) {
     });
 }
 
-// Open thread detail page
+// Open thread detail page with fade
 async function openThread(boardCode, thread) {
     if (!threadsPage || !chatPage || !threadTitle || !chatMessages) return;
     threadsPage.classList.remove('active');
-    chatPage.classList.add('active');
-    threadTitle.textContent = thread.sub || `Thread #${thread.no}`;
-    chatMessages.innerHTML = '';
+    setTimeout(() => {
+        chatPage.classList.add('active');
+        threadTitle.textContent = thread.sub || `Thread #${thread.no}`;
+        chatMessages.innerHTML = '';
+        fetchThreadMessages(boardCode, thread.no);
+    }, 300);
+}
 
+// Fetch thread messages
+async function fetchThreadMessages(boardCode, threadNo) {
     try {
-        const response = await fetch(`${CORS_PROXY}${API_BASE}${boardCode}/thread/${thread.no}.json`);
+        const response = await fetch(`${CORS_PROXY}${API_BASE}${boardCode}/thread/${threadNo}.json`);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         displayMessages(boardCode, data.posts);
@@ -258,12 +371,10 @@ function displayMessages(boardCode, posts) {
     if (!chatMessages) return;
     const postMap = new Map();
 
-    // Initialize post map
     posts.forEach(post => {
         postMap.set(post.no, post);
     });
 
-    // Display all posts
     posts.forEach(post => {
         appendMessageWithReplies(boardCode, post, postMap);
     });
@@ -276,21 +387,30 @@ function appendMessageWithReplies(boardCode, post, postMap) {
     if (!chatMessages) return;
     const message = document.createElement('div');
     message.id = `post-${post.no}`;
-    const isReply = post.com && post.com.trim().startsWith('>>');
-    message.classList.add('message', isReply ? 'reply' : 'received'); // Fixed typo: isRefply -> isReply
+    
+    // Check if the comment starts with >>
+    const commentText = post.com ? post.com.trim().replace(/<[^>]+>/g, '') : '';
+    const startsWithReplyLink = commentText.match(/^>>\d+/);
+    
+    // Apply reply or received class
+    const isReply = startsWithReplyLink || (post.com && post.com.trim().startsWith('>>'));
+    message.classList.add('message', isReply ? 'reply' : 'received');
+    
+    // Explicitly add reply-link-start for messages starting with >>
+    if (startsWithReplyLink) {
+        message.classList.add('reply-link-start');
+        console.log(`Post ${post.no} styled as reply-link-start: ${commentText}`);
+    }
 
-    // Process comment
     let commentHtml = '';
     if (post.com) {
         commentHtml = post.com.replace(/<[^>]+>/g, '');
-        // Convert >> links to clickable spans
         const replyRegex = />>(\d+)/g;
         commentHtml = commentHtml.replace(replyRegex, (match, postNo) => {
             return `<span class="reply-link" data-post-no="${postNo}">${match}</span>`;
         });
     }
 
-    // Create preview for replies
     let previewHtml = '';
     if (isReply) {
         const replyMatch = post.com.match(/>>(\d+)/);
@@ -310,12 +430,10 @@ function appendMessageWithReplies(boardCode, post, postMap) {
         }
     }
 
-    // Build message HTML
     let html = `
         <div class="username">${post.name || 'Anonymous'} #${post.no}<span class="timestamp">${formatTimestamp(post.time)}</span></div>
     `;
     if (commentHtml && !(post.tim && post.ext && !post.com)) {
-        // Show comment unless it's an image-only post
         html += `<div>${commentHtml}</div>`;
     }
     if (post.tim && post.ext) {
@@ -324,12 +442,11 @@ function appendMessageWithReplies(boardCode, post, postMap) {
     }
     message.innerHTML = previewHtml + html;
 
-    // Add event listeners
     const img = message.querySelector('img');
     if (img) {
         img.addEventListener('click', () => openImageModal(img.getAttribute('data-fullsrc') || img.src));
         if (settings.hoverZoom) {
-            img.addEventListener('mouseenter', () => showZoomPreview(img));
+            img.addEventListener('mouseenter', (e) => showZoomPreview(img, e));
             img.addEventListener('mouseleave', hideZoomPreview);
             img.addEventListener('mousemove', moveZoomPreview);
         }
@@ -347,11 +464,12 @@ function appendMessageWithReplies(boardCode, post, postMap) {
 }
 
 // Zoom preview functions
-function showZoomPreview(img) {
+function showZoomPreview(img, e) {
     if (!settings.hoverZoom || !zoomImagePreview) return;
     const fullSrc = img.getAttribute('data-fullsrc') || img.src;
     zoomImagePreview.innerHTML = `<img src="${fullSrc}">`;
     zoomImagePreview.style.display = 'block';
+    moveZoomPreview(e); // Position immediately
 }
 
 function hideZoomPreview() {
@@ -367,20 +485,21 @@ function moveZoomPreview(e) {
 
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
-    const previewRect = preview.getBoundingClientRect();
-    const offset = 10;
+    const offset = 20; // Slightly larger offset for better positioning
 
-    let left = e.pageX - previewRect.width / 2;
-    let top = e.pageY - previewRect.height / 2;
+    let left = e.pageX + offset;
+    let top = e.pageY + offset;
 
-    if (left < 10) left = 10;
-    if (top < 10) top = 10;
-    if (left + previewRect.width > viewportWidth - 10) {
-        left = viewportWidth - previewRect.width - 10;
+    // Ensure preview stays within viewport
+    const previewRect = zoomImagePreview.getBoundingClientRect();
+    if (left + previewRect.width > viewportWidth - offset) {
+        left = e.pageX - previewRect.width - offset; // Flip to left side
     }
-    if (top + previewRect.height > viewportHeight - 10) {
-        top = viewportHeight - previewRect.height - 10;
+    if (top + previewRect.height > viewportHeight - offset) {
+        top = e.pageY - previewRect.height - offset; // Flip above
     }
+    if (left < offset) left = offset;
+    if (top < offset) top = offset;
 
     zoomImagePreview.style.left = `${left}px`;
     zoomImagePreview.style.top = `${top}px`;
@@ -429,7 +548,9 @@ if (backToBoardsBtn) {
     backToBoardsBtn.addEventListener('click', () => {
         if (!threadsPage || !boardsPage) return;
         threadsPage.classList.remove('active');
-        boardsPage.classList.add('active');
+        setTimeout(() => {
+            boardsPage.classList.add('active');
+        }, 300);
     });
 }
 
@@ -437,7 +558,9 @@ if (backToThreadsBtn) {
     backToThreadsBtn.addEventListener('click', () => {
         if (!chatPage || !threadsPage) return;
         chatPage.classList.remove('active');
-        threadsPage.classList.add('active');
+        setTimeout(() => {
+            threadsPage.classList.add('active');
+        }, 300);
     });
 }
 

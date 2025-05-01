@@ -17,6 +17,17 @@
 
 A touch-friendly UI with thread view, board/thread search, offline caching, and dark mode. Built with HTML, CSS, and JS.
 
+
+<div align="center">
+  <h2 style="font-size: 74px;">
+    <strong>
+      <a href="https://cors-anywhere.herokuapp.com/corsdemo" style="text-decoration: none; color: inherit;">
+       Get Access to get content loading
+      </a>
+    </strong>
+  </h2>
+
+
 ## Features
 
 - **iMessage-Inspired Design**: Clean, minimal UI mimicking iMessage's look and feel.
@@ -38,12 +49,3 @@ A touch-friendly UI with thread view, board/thread search, offline caching, and 
 
 ## HINT ON GITHUB THERE IS NO IMAGE SUPPORT SO IF U WANT IMAGE SUPPORT LOCAL HOST THE SITE
 with just cloning the repo and access the site that way
-
-<div align="center">
-  <h2 style="font-size: 74px;">
-    <strong>
-      <a href="https://cors-anywhere.herokuapp.com/corsdemo" style="text-decoration: none; color: inherit;">
-       Get Access
-      </a>
-    </strong>
-  </h2>

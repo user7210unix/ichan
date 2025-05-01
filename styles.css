@@ -39,6 +39,8 @@ body.dark-mode #parallax-bg {
     position: relative;
     z-index: 1;
     background: rgba(255, 255, 255, 0.95);
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 body.dark-mode .page {
@@ -47,6 +49,7 @@ body.dark-mode .page {
 
 .page.active {
     display: block;
+    opacity: 1;
 }
 
 h1, h2 {
@@ -63,12 +66,20 @@ h1, h2 {
     background-color: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
-    padding: 10px 15px;
+    padding: 8px 15px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     z-index: 10;
+    height: 48px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    will-change: transform, opacity;
+}
+
+.header.hidden {
+    transform: translateY(-100%);
+    opacity: 0;
 }
 
 body.dark-mode .header {
@@ -81,6 +92,16 @@ body.dark-mode .header {
     border: none;
     font-size: 18px;
     cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.header button:hover {
+    transform: scale(1.1);
+}
+
+.header button:focus {
+    outline: 2px solid #007aff;
+    outline-offset: 2px;
 }
 
 .header-buttons {
@@ -90,23 +111,125 @@ body.dark-mode .header {
 
 .dark-mode-toggle, .settings-toggle {
     font-size: 20px;
-    transition: transform 0.3s ease;
 }
 
-.dark-mode-toggle:hover, .settings-toggle:hover {
-    transform: scale(1.1);
+/* Search Bar */
+.search-container {
+    display: flex;
+    justify-content: center;
+    padding: 15px;
+    position: relative;
+}
+
+#board-search {
+    width: 100%;
+    max-width: 500px;
+    padding: 10px 15px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 25px;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#board-search:focus {
+    border-color: #007aff;
+    box-shadow: 0 0 8px rgba(0, 122, 255, 0.3);
+    outline: 2px solid #007aff;
+}
+
+body.dark-mode #board-search {
+    background-color: #2a2a2a;
+    border-color: #555;
+    color: #e0e0e0;
+}
+
+#search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 500px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 10;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+#search-suggestions.active {
+    display: block;
+    opacity: 1;
+}
+
+body.dark-mode #search-suggestions {
+    background-color: #2a2a2a;
+    border-color: #555;
+}
+
+.suggestion-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: slideIn 0.3s forwards;
+}
+
+@keyframes slideIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.suggestion-item:nth-child(1) { animation-delay: 0.05s; }
+.suggestion-item:nth-child(2) { animation-delay: 0.1s; }
+.suggestion-item:nth-child(3) { animation-delay: 0.15s; }
+.suggestion-item:nth-child(4) { animation-delay: 0.2s; }
+.suggestion-item:nth-child(5) { animation-delay: 0.25s; }
+
+.suggestion-item:hover {
+    background-color: #f0f0f0;
+}
+
+body.dark-mode .suggestion-item:hover {
+    background-color: #3a3a3a;
+}
+
+.suggestion-item span {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.suggestion-item p {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: #666;
+}
+
+body.dark-mode .suggestion-item p {
+    color: #aaa;
 }
 
 /* Boards Page */
 .boards-section {
     padding: 10px 15px;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
-#favorite-boards {
+#favorite-boards, #all-boards {
     display: none;
 }
 
-#favorite-boards.active {
+#favorite-boards.active, #all-boards {
     display: block;
 }
 
@@ -117,15 +240,43 @@ body.dark-mode .header {
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     cursor: pointer;
-    transition: transform 0.1s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.4s forwards;
 }
+
+#favorite-boards .board-item {
+    background-color: #f5faff;
+}
+
+#favorite-boards .board-item:hover {
+    transform: translateY(-3px) scale(1.02);
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.board-item:nth-child(1) { animation-delay: 0.1s; }
+.board-item:nth-child(2) { animation-delay: 0.15s; }
+.board-item:nth-child(3) { animation-delay: 0.2s; }
+.board-item:nth-child(4) { animation-delay: 0.25s; }
+.board-item:nth-child(5) { animation-delay: 0.3s; }
 
 body.dark-mode .board-item {
     background-color: #2a2a2a;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode #favorite-boards .board-item {
+    background-color: #3a3a3a;
 }
 
 .board-item:hover {
@@ -155,6 +306,8 @@ body.dark-mode .board-item p {
 /* Threads Page */
 #threads-list {
     padding: 10px 15px;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 .thread-item {
@@ -166,9 +319,18 @@ body.dark-mode .board-item p {
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     cursor: pointer;
-    transition: transform 0.1s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
     gap: 15px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.4s forwards;
 }
+
+.thread-item:nth-child(1) { animation-delay: 0.1s; }
+.thread-item:nth-child(2) { animation-delay: 0.15s; }
+.thread-item:nth-child(3) { animation-delay: 0.2s; }
+.thread-item:nth-child(4) { animation-delay: 0.25s; }
+.thread-item:nth-child(5) { animation-delay: 0.3s; }
 
 body.dark-mode .thread-item {
     background-color: #2a2a2a;
@@ -189,6 +351,11 @@ body.dark-mode .thread-item:hover {
     height: 50px;
     object-fit: cover;
     border-radius: 8px;
+    transition: transform 0.2s ease;
+}
+
+.thread-item img:hover {
+    transform: scale(1.05);
 }
 
 .thread-item .content {
@@ -209,30 +376,47 @@ body.dark-mode .thread-item:hover {
 /* Chat Page */
 #chat-messages {
     padding: 15px;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 .message {
     max-width: 80%;
-    padding: 12px 16px; /* Increased padding for readability */
-    margin: 12px 0; /* More space between messages */
-    border-radius: 15px;
+    padding: 12px 16px;
+    margin: 12px 0;
+    border-radius: 18px;
     word-wrap: break-word;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25), 0 3px 10px rgba(0, 0, 0, 0.15); /* Darker, lower opacity shadow */
-    border: 1px solid rgba(0, 0, 0, 0.1); /* Light border for 3D effect */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     position: relative;
-    transform: translateY(0);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    font-size: 14px; /* Improved readability */
-    line-height: 1.5; /* Better text spacing */
+    transform: translateY(20px);
+    opacity: 0;
+    animation: messageFadeIn 0.4s forwards;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease;
+    font-size: 14px;
+    line-height: 1.5;
 }
 
+@keyframes messageFadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message:nth-child(1) { animation-delay: 0.1s; }
+.message:nth-child(2) { animation-delay: 0.15s; }
+.message:nth-child(3) { animation-delay: 0.2s; }
+.message:nth-child(4) { animation-delay: 0.25s; }
+.message:nth-child(5) { animation-delay: 0.3s; }
+
 body.dark-mode .message {
-    border: 1px solid rgba(255, 255, 255, 0.2); /* Light border in dark mode */
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .message:hover {
-    transform: translateY(-2px) scale(1.02); /* Enhanced 3D hover effect */
-    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.2); /* Deeper shadow on hover */
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
 }
 
 .message.received {
@@ -244,10 +428,15 @@ body.dark-mode .message.received {
     background-color: #4a4a4a;
 }
 
-.message.reply {
+.message.reply, .message.reply-link-start {
     margin-left: auto;
     background-color: #007aff;
     color: white;
+    border: none;
+}
+
+body.dark-mode .message.reply, body.dark-mode .message.reply-link-start {
+    background-color: #0a84ff;
 }
 
 .message img {
@@ -256,6 +445,12 @@ body.dark-mode .message.received {
     border-radius: 10px;
     margin-top: 8px;
     cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.message img:hover {
+    box-shadow: none;
+    transform: scale(none);
 }
 
 .message .username {
@@ -303,7 +498,7 @@ body.dark-mode .replies-container {
 }
 
 .reply-preview {
-    background-color: #f0f0f0;
+    background-color: #007AFF;
     padding: 5px 10px;
     border-radius: 8px;
     margin-bottom: 5px;
@@ -337,10 +532,8 @@ body.dark-mode .reply-preview {
 }
 
 .zoom-image-preview img {
-    width: 140%;
-    height: 140%;
-    max-width: 90vw;
-    max-height: 90vh;
+    max-width: 500px;
+    max-height: 500px;
     object-fit: contain;
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -372,6 +565,14 @@ body.dark-mode .reply-preview {
     max-width: 400px;
     position: relative;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transform: scale(0.95);
+    opacity: 0;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.settings-popup.active .settings-content {
+    transform: scale(1);
+    opacity: 1;
 }
 
 body.dark-mode .settings-content {
@@ -442,12 +643,37 @@ body.dark-mode .settings-content {
     max-width: 90%;
     max-height: 90vh;
     border-radius: 10px;
+    transform: scale(0.95);
+    opacity: 0;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.modal.active #modal-image {
+    transform: scale(1);
+    opacity: 1;
+}
+
+/* Scrollbar Styling */
+#chat-messages, #favorite-boards-selector, #search-suggestions {
+    scrollbar-width: thin;
+    scrollbar-color: #007aff #e0e0e0;
+}
+
+body.dark-mode #chat-messages,
+body.dark-mode #favorite-boards-selector,
+body.dark-mode #search-suggestions {
+    scrollbar-color: #66b0ff #2a2a2a;
 }
 
 /* Responsiveness */
 @media (max-width: 768px) {
     h1, h2 {
         font-size: 20px;
+    }
+
+    .header {
+        padding: 6px 10px;
+        height: 40px;
     }
 
     .board-item, .thread-item {
@@ -478,7 +704,7 @@ body.dark-mode .settings-content {
     .message {
         padding: 10px 12px;
         max-width: 90%;
-        margin: 10px 0; /* Adjusted for mobile */
+        margin: 10px 0;
     }
 
     .message .username, .message .timestamp {
@@ -499,11 +725,17 @@ body.dark-mode .settings-content {
         max-height: 30px;
     }
 
-    .zoom-image-preview img {
-        width: 130%;
-        height: 130%;
-        max-width: 80vw;
-        max-height: 80vh;
+    .search-container {
+        padding: 10px;
+    }
+
+    #board-search {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+
+    #search-suggestions {
+        max-width: 90vw;
     }
 }
 

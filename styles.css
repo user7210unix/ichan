@@ -43,8 +43,16 @@ body.dark-mode #parallax-bg {
     transition: opacity 0.3s ease;
 }
 
+#boards-page {
+    background: rgba(240, 240, 240, 0.95);
+}
+
 body.dark-mode .page {
     background: rgba(26, 26, 26, 0.95);
+}
+
+body.dark-mode #boards-page {
+    background: rgba(42, 42, 42, 0.95);
 }
 
 .page.active {
@@ -355,7 +363,7 @@ body.dark-mode .thread-item:hover {
 }
 
 .thread-item img:hover {
-    transform: scale(1.05);
+    transform: scale(1.02);
 }
 
 .thread-item .content {
@@ -450,7 +458,7 @@ body.dark-mode .message.reply, body.dark-mode .message.reply-link-start {
 
 .message img:hover {
     box-shadow: none;
-    transform: scale(none);
+    transform: scale(1.02);
 }
 
 .message .username {
@@ -498,7 +506,7 @@ body.dark-mode .replies-container {
 }
 
 .reply-preview {
-    background-color: #007AFF;
+    background-color: #f0f0f0;
     padding: 5px 10px;
     border-radius: 8px;
     margin-bottom: 5px;
@@ -532,8 +540,8 @@ body.dark-mode .reply-preview {
 }
 
 .zoom-image-preview img {
-    max-width: 500px;
-    max-height: 500px;
+    max-width: 650px;
+    max-height: 650px;
     object-fit: contain;
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -723,6 +731,11 @@ body.dark-mode #search-suggestions {
     .reply-preview img {
         max-width: 30px;
         max-height: 30px;
+    }
+
+    .zoom-image-preview img {
+        max-width: 150px;
+        max-height: 150px;
     }
 
     .search-container {

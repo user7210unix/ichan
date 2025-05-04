@@ -366,6 +366,18 @@ function formatTimestamp(unixTime) {
     }
 }
 
+// Sanitize HTML content
+function sanitizeComment(comment) {
+    if (!comment) return '';
+    // Remove HTML tags and decode entities
+    const div = document.createElement('div');
+    div.innerHTML = comment;
+    let text = div.textContent || div.innerText || '';
+    // Preserve line breaks
+    text = text.replace(/\n/g, '<br>');
+    return text;
+}
+
 // Display messages in thread
 function displayMessages(boardCode, posts) {
     if (!chatMessages) return;
@@ -388,29 +400,33 @@ function appendMessageWithReplies(boardCode, post, postMap) {
     const message = document.createElement('div');
     message.id = `post-${post.no}`;
     
-    // Check if the comment starts with >>
-    const commentText = post.com ? post.com.trim().replace(/<[^>]+>/g, '') : '';
+    // Determine if the post is a reply
+    const commentText = sanitizeComment(post.com);
     const startsWithReplyLink = commentText.match(/^>>\d+/);
-    
-    // Apply reply or received class
-    const isReply = startsWithReplyLink || (post.com && post.com.trim().startsWith('>>'));
-    message.classList.add('message', isReply ? 'reply' : 'received');
-    
-    // Explicitly add reply-link-start for messages starting with >>
-    if (startsWithReplyLink) {
-        message.classList.add('reply-link-start');
-        console.log(`Post ${post.no} styled as reply-link-start: ${commentText}`);
+    const isReply = startsWithReplyLink || (post.com && post.com.match(/>>(\d+)/));
+
+    // Apply appropriate classes
+    message.classList.add('message');
+    if (isReply) {
+        message.classList.add('reply');
+        if (startsWithReplyLink) {
+            message.classList.add('reply-link-start');
+            console.log(`Post ${post.no} styled as reply-link-start: ${commentText}`);
+        }
+    } else {
+        message.classList.add('received');
     }
 
-    let commentHtml = '';
-    if (post.com) {
-        commentHtml = post.com.replace(/<[^>]+>/g, '');
+    // Process comment and reply links
+    let commentHtml = commentText;
+    if (commentHtml) {
         const replyRegex = />>(\d+)/g;
         commentHtml = commentHtml.replace(replyRegex, (match, postNo) => {
             return `<span class="reply-link" data-post-no="${postNo}">${match}</span>`;
         });
     }
 
+    // Generate reply preview if applicable
     let previewHtml = '';
     if (isReply) {
         const replyMatch = post.com.match(/>>(\d+)/);
@@ -418,31 +434,33 @@ function appendMessageWithReplies(boardCode, post, postMap) {
             const referencedPostNo = parseInt(replyMatch[1]);
             const referencedPost = postMap.get(referencedPostNo);
             if (referencedPost) {
-                let previewText = referencedPost.com ? referencedPost.com.replace(/<[^>]+>/g, '').substring(0, 50) : '';
-                if (previewText.length > 50) previewText += '...';
+                let previewText = sanitizeComment(referencedPost.com);
+                previewText = previewText.length > 50 ? previewText.substring(0, 47) + '...' : previewText;
                 previewHtml = `<div class="reply-preview">`;
                 if (referencedPost.tim && referencedPost.ext) {
                     const previewImgUrl = `https://i.4cdn.org/${boardCode}/${referencedPost.tim}${referencedPost.ext}`;
                     previewHtml += `<img src="${previewImgUrl}" onerror="this.style.display='none'">`;
                 }
-                previewHtml += `${previewText}</div>`;
+                previewHtml += `<span>${previewText}</span></div>`;
             }
         }
     }
 
+    // Build message HTML
     let html = `
         <div class="username">${post.name || 'Anonymous'} #${post.no}<span class="timestamp">${formatTimestamp(post.time)}</span></div>
     `;
     if (commentHtml && !(post.tim && post.ext && !post.com)) {
-        html += `<div>${commentHtml}</div>`;
+        html += `<div class="message-content">${commentHtml}</div>`;
     }
     if (post.tim && post.ext) {
         const imgUrl = `https://i.4cdn.org/${boardCode}/${post.tim}${post.ext}`;
-        html += `<img src="${imgUrl}" data-fullsrc="${imgUrl}" onerror="this.style.display='none'">`;
+        html += `<img src="${imgUrl}" data-fullsrc="${imgUrl}" onerror="this.style.display='none'" class="message-image">`;
     }
     message.innerHTML = previewHtml + html;
 
-    const img = message.querySelector('img');
+    // Add event listeners for images
+    const img = message.querySelector('img.message-image');
     if (img) {
         img.addEventListener('click', () => openImageModal(img.getAttribute('data-fullsrc') || img.src));
         if (settings.hoverZoom) {
@@ -452,6 +470,7 @@ function appendMessageWithReplies(boardCode, post, postMap) {
         }
     }
 
+    // Add event listeners for reply links
     const replyLinks = message.querySelectorAll('.reply-link');
     replyLinks.forEach(link => {
         link.addEventListener('click', () => {
@@ -469,7 +488,7 @@ function showZoomPreview(img, e) {
     const fullSrc = img.getAttribute('data-fullsrc') || img.src;
     zoomImagePreview.innerHTML = `<img src="${fullSrc}">`;
     zoomImagePreview.style.display = 'block';
-    moveZoomPreview(e); // Position immediately
+    moveZoomPreview(e);
 }
 
 function hideZoomPreview() {
@@ -485,18 +504,17 @@ function moveZoomPreview(e) {
 
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
-    const offset = 20; // Slightly larger offset for better positioning
+    const offset = 20;
 
     let left = e.pageX + offset;
     let top = e.pageY + offset;
 
-    // Ensure preview stays within viewport
     const previewRect = zoomImagePreview.getBoundingClientRect();
     if (left + previewRect.width > viewportWidth - offset) {
-        left = e.pageX - previewRect.width - offset; // Flip to left side
+        left = e.pageX - previewRect.width - offset;
     }
     if (top + previewRect.height > viewportHeight - offset) {
-        top = e.pageY - previewRect.height - offset; // Flip above
+        top = e.pageY - previewRect.height - offset;
     }
     if (left < offset) left = offset;
     if (top < offset) top = offset;

@@ -21,22 +21,14 @@ body.dark-mode {
     color: #e0e0e0;
 }
 
-body.high-contrast .thread-item.light-text .thread-title,
-body.high-contrast .thread-item.light-text .username,
-body.high-contrast .thread-item.light-text .thread-preview,
+body.high-contrast .thread-item .thread-title,
+body.high-contrast .thread-item .thread-preview,
 body.high-contrast .message,
 body.high-contrast .message .username,
 body.high-contrast .message .timestamp,
 body.high-contrast .message-content {
     color: #fff !important;
     text-shadow: 0 0 2px #000, 0 0 4px #000 !important;
-}
-
-body.high-contrast .thread-item.dark-text .thread-title,
-body.high-contrast .thread-item.dark-text .username,
-body.high-contrast .thread-item.dark-text .thread-preview {
-    color: #000 !important;
-    text-shadow: 0 0 2px #fff, 0 0 4px #fff !important;
 }
 
 #parallax-bg {
@@ -401,15 +393,13 @@ body.dark-mode .board-item p {
     padding: 15px;
     margin: 8px 0;
     border-radius: 12px;
-    box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 0.8), inset -2px -2px 5px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
     overflow: hidden;
     opacity: 0;
     transform: translateY(20px);
     animation: fadeInUp 0.4s forwards;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
 }
 
 .thread-item.pinned {
@@ -430,24 +420,55 @@ body.dark-mode .thread-item.pinned {
     height: 100%;
     background-size: cover;
     background-position: center;
-    filter: blur(20px) opacity(0.5);
     z-index: -1;
 }
 
-.thread-item.light-text .thread-title, .thread-item.light-text .username, .thread-item.light-text .thread-preview {
-    color: #fff;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+.thread-item::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 70%; /* Fade covers bottom half */
+    background: linear-gradient(to top, rgba(255, 255, 255, 1), transparent); /* Fade to white */
+    z-index: 0;
 }
 
-.thread-item.dark-text .thread-title, .thread-item.dark-text .username, .thread-item.dark-text .thread-preview {
-    color: #333;
-    text-shadow: 0 1px 3px rgba(255, 255, 255, 0.5);
+body.dark-mode .thread-item::after {
+    background: linear-gradient(to top, rgba(42, 42, 42, 1), transparent); /* Fade to dark */
 }
 
-body.dark-mode .thread-item.dark-text .thread-title,
-body.dark-mode .thread-item.dark-text .username,
-body.dark-mode .thread-item.dark-text .thread-preview {
-    color: #e0e0e0;
+.thread-item .content {
+    position: relative;
+    z-index: 1;
+    margin-top: auto; /* Push content to bottom */
+    padding: 10px;
+}
+
+.thread-item .thread-title {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #000; /* Black text in light mode */
+}
+
+body.dark-mode .thread-item .thread-title {
+    color: #fff; /* White text in dark mode */
+}
+
+.thread-item .thread-preview {
+    font-size: 12px;
+    color: #000; /* Black text in light mode */
+    margin-top: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.4;
+}
+
+body.dark-mode .thread-item .thread-preview {
+    color: #fff; /* White text in dark mode */
 }
 
 .thread-item:nth-child(1) { animation-delay: 0.1s; }
@@ -458,69 +479,16 @@ body.dark-mode .thread-item.dark-text .thread-preview {
 
 body.dark-mode .thread-item {
     background-color: rgba(42, 42, 42, 0.85);
-    box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 0.1), inset -2px -2px 5px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .thread-item:hover {
     transform: translateY(-3px);
-    box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 0.8), inset -2px -2px 5px rgba(0, 0, 0, 0.2), 0 6px 16px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
 
 body.dark-mode .thread-item:hover {
-    box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 0.1), inset -2px -2px 5px rgba(0, 0, 0, 0.4), 0 6px 16px rgba(0, 0, 0, 0.4);
-}
-
-.thread-item .content {
-    position: relative;
-    z-index: 1;
-}
-
-.thread-item .thread-title {
-    font-size: 16px;
-    font-weight: 500;
-    margin-bottom: 8px;
-}
-
-.thread-item .username {
-    font-size: 14px;
-    color: #007aff;
-    margin-bottom: 8px;
-}
-
-body.dark-mode .thread-item.light-text .username {
-    color: #66b0ff;
-}
-
-.thread-item .thread-preview {
-    font-size: 12px;
-    color: #666;
-    margin-top: 8px;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    line-height: 1.4;
-}
-
-body.dark-mode .thread-item .thread-preview {
-    color: #aaa;
-}
-
-.thread-item .pin-toggle, .thread-item .tag-toggle {
-    position: absolute;
-    top: 10px;
-    background: none;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-.thread-item .pin-toggle {
-    right: 10px;
-}
-
-.thread-item .tag-toggle {
-    right: 40px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
 }
 
 /* Chat Page */
@@ -543,7 +511,7 @@ body.dark-mode .thread-item .thread-preview {
     opacity: 0;
     animation: messageFadeIn 0.4s forwards;
     transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease;
-    font-size: 14px;
+    font-size: 16px;
     line-height: 1.5;
 }
 
@@ -571,22 +539,33 @@ body.dark-mode .message {
 
 .message.received {
     margin-right: auto;
-    background-color: #e5e5ea;
+    background-color: #E5E5EA;
 }
 
 body.dark-mode .message.received {
-    background-color: #4a4a4a;
+    background-color: #B0B0B5;
+}
+
+body.high-contrast .message.received {
+    background-color: #808080;
 }
 
 .message.reply, .message.reply-link-start {
     margin-left: auto;
-    background-color: #007aff;
-    color: #fff;
+    background-color: #007AFF;
+    color: #e0e0e0; /* Lighter gray for better readability */
     border: none;
 }
 
+
 body.dark-mode .message.reply, body.dark-mode .message.reply-link-start {
-    background-color: #0a84ff;
+    background-color: #005BB5;
+    color: #e0e0e0;
+}
+
+body.high-contrast .message.reply, body.high-contrast .message.reply-link-start {
+    background-color: #0000FF;
+    color: #fff;
 }
 
 .message img {
@@ -623,6 +602,7 @@ body.dark-mode .message.received .username {
 .message .timestamp {
     font-size: 10px;
     margin-left: 8px;
+    display: inline;
 }
 
 .message.received .timestamp {
@@ -963,10 +943,6 @@ body.dark-mode #thread-tags-list {
 
     .thread-item .thread-title {
         font-size: 14px;
-    }
-
-    .thread-item .username {
-        font-size: 12px;
     }
 
     .thread-item .thread-preview {

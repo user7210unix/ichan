@@ -224,7 +224,7 @@ function countryCodeToFlag(countryCode) {
         'CN': '🇨🇳', 'IN': '🇮🇳', 'RU': '🇷🇺', 'CA': '🇨🇦', 'AU': '🇦🇺', 'ES': '🇪🇸',
         'IT': '🇮🇹', 'KR': '🇰🇷', 'MX': '🇲🇽', 'NL': '🇳🇱', 'SE': '🇸🇪', 'CH': '🇨🇭',
     };
-    return flagMap[countryCode] || '🏳️';
+    return flagMap[countryCode] || '❌';
 }
 
 // Auto-Refresh Functions

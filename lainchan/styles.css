@@ -15,6 +15,95 @@ body {
     padding-top: 80px; /* Space for fixed header */
 }
 
+/* Loading Screen */
+.loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(26, 38, 52, 0.9); /* Semi-transparent dark blue */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 2000;
+}
+
+.loading-text {
+    color: #ffffff;
+    font-size: 16pt;
+    font-weight: 600;
+    margin-left: 10px;
+}
+
+.dot {
+    margin-left: 3px;
+    animation: blink 1.5s infinite;
+}
+
+.dot:nth-child(2) {
+    animation-delay: 0.3s;
+}
+
+.dot:nth-child(3) {
+    animation-delay: 0.6s;
+}
+
+.loading-bar-background {
+    --height: 30px;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 5px;
+    width: 200px;
+    height: var(--height);
+    background-color: #0f1a2a; /* Darker blue */
+    box-shadow: #0c0c0c -2px 2px 4px 0px inset;
+    border-radius: calc(var(--height) / 2);
+}
+
+.loading-bar {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    --height: 20px;
+    width: 0%;
+    height: var(--height);
+    overflow: hidden;
+    background: linear-gradient(0deg, #4682b4 0%, #87ceeb 100%); /* Blue gradient */
+    border-radius: calc(var(--height) / 2);
+    animation: loading 4s ease-out infinite;
+}
+
+.white-bars-container {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.white-bar {
+    background: linear-gradient(-45deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 70%);
+    width: 10px;
+    height: 45px;
+    opacity: 0.3;
+    rotate: 45deg;
+}
+
+@keyframes loading {
+    0% { width: 0; }
+    80% { width: 100%; }
+    100% { width: 100%; }
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
+}
+
 /* Header */
 .header {
     background-color: #0f1a2a;
@@ -35,7 +124,7 @@ body {
 
 .header-title {
     font-size: 1.5rem;
-    color: #87ceeb; /* Light blue */
+    color: #87ceeb;
     margin: 0;
 }
 
@@ -52,6 +141,12 @@ body {
     font-family: 'Panton', sans-serif;
     font-size: 1rem;
     padding: 10px;
+    text-align: center;
+    text-align-last: center; /* For some browsers */
+}
+
+.form-select option {
+    text-align: center;
 }
 
 .form-select:focus {
@@ -113,7 +208,7 @@ body {
 }
 
 .text-muted {
-    color: #d3d3d3; /* Light grey */
+    color: #d3d3d3;
     font-size: 0.85rem;
 }
 
@@ -126,7 +221,9 @@ body {
 }
 
 .image-preview img {
-    width: 300px;
+    max-width: 90vw;
+    max-height: 90vh;
+    width: auto;
     height: auto;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
@@ -143,7 +240,7 @@ body {
 }
 
 .btn-close-white {
-    filter: invert(1); /* White close button */
+    filter: invert(1);
 }
 
 #modalImage {
@@ -160,7 +257,7 @@ body {
 
 .btn-back {
     background-color: #87ceeb;
-    color: #ffffff; /* White for readability */
+    color: #ffffff;
     border: none;
     font-family: 'Panton', sans-serif;
     font-size: 1rem;
@@ -215,21 +312,22 @@ body {
 }
 
 .yours .message {
-    background: #1f2e42; /* Darker blue for OP */
+    background: #1f2e42;
     border-radius: 1.125rem 1.125rem 1.125rem 0;
 }
 
 .mine .message {
     margin-left: auto;
     border-radius: 1.125rem 1.125rem 0 1.125rem;
-    background: linear-gradient(to bottom, #87ceeb 0%, #4682b4 100%);
-    color: #ffffff; /* White for readability */
+    background: #6495ed; /* Cornflower Blue for replies */
+    color: #ffffff;
 }
 
 .message img {
     max-width: 100%;
     border-radius: 10px;
-    margin-top: 5px;
+    margin-top: 10px; /* Increased spacing */
+    margin-bottom: 10px; /* Increased spacing */
     cursor: pointer;
     loading: lazy;
 }
@@ -260,6 +358,8 @@ body {
 .highlight {
     animation: highlight 1s ease-out;
 }
+
+ EXPECTED OUTPUT:
 
 @keyframes highlight {
     0% { background-color: rgba(135, 206, 235, 0.3); }
@@ -349,11 +449,20 @@ body {
     }
 
     .image-preview img {
-        width: 200px;
+        max-width: 80vw;
+        max-height: 80vh;
     }
 
     .btn-back {
         padding: 6px 12px;
         font-size: 0.9rem;
+    }
+
+    .loading-text {
+        font-size: 12pt;
+    }
+
+    .loading-bar-background {
+        width: 150px;
     }
 }

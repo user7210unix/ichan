@@ -643,11 +643,11 @@ body.dark-mode .message .download-btn {
 }
 
 .message.reply .reply-link, .message.reply-link-start .reply-link {
-    color: #66b0ff;
+    color: #ffffff;
 }
 
 body.dark-mode .reply-link {
-    color: #66b0ff;
+    color: #ffffff;
 }
 
 .reply-link:hover {
@@ -655,14 +655,14 @@ body.dark-mode .reply-link {
 }
 
 .greentext {
-    color: #789922;
+    color: #000000;
     display: block;
     margin: 8px 0;
     line-height: 1.6;
 }
 
 body.dark-mode .greentext {
-    color: #b3c76a;
+    color: #ffffff;
 }
 
 .message-content {

@@ -594,7 +594,6 @@ function displayThreads(threads, boardCode) {
         }
 
         const pinButton = document.createElement('button');
-        pinButton.classList.add('pin-toggle');
         pinButton.innerHTML = settings.pinnedThreads.includes(threadId) ? '<i class="fas fa-thumbtack"></i>' : '<i class="far fa-thumbtack"></i>';
         pinButton.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -602,8 +601,7 @@ function displayThreads(threads, boardCode) {
         });
 
         const tagButton = document.createElement('button');
-        tagButton.classList.add('tag-toggle');
-        tagButton.title = 'Add or remove a tag for this thread';
+                tagButton.title = 'Add or remove a tag for this thread';
         tagButton.innerHTML = '<i class="fas fa-tag"></i>';
         tagButton.addEventListener('click', (e) => {
             e.stopPropagation();

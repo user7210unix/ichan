@@ -45,10 +45,10 @@ const API_BASE = 'https://a.4cdn.org/';
 const CURRENT_DATE = new Date('2025-05-01');
 
 let settings = {
-    hoverZoom: true,
+    hoverZoom: false,
     darkMode: false,
     highContrast: false,
-    showIP: true,
+    showIP: false,
     autoRefresh: false,
     favoriteBoards: [],
     pinnedThreads: [],
@@ -773,13 +773,13 @@ function appendMessageWithReplies(boardCode, post, postMap) {
         html += `<div class="message-content">${commentHtml}</div>`;
     }
     if (post.tim && post.ext) {
-        const imgUrl = `https://i.4cdn.org/${boardCode}/${post.tim}${post.ext}`;
-        html += `
-            <img src="${imgUrl}" data-fullsrc="${imgUrl}" onerror="this.style.display='none'" class="message-image">
-            <button class="download-btn" data-url="${imgUrl}"><i class="fas fa-download"></i></button>
-        `;
-    }
-    message.innerHTML = previewHtml + html;
+    const imgUrl = `https://i.4cdn.org/${boardCode}/${post.tim}${post.ext}`;
+    html += `
+        <img src="${imgUrl}" data-fullsrc="${imgUrl}" onerror="this.style.display='none'" class="message-image">
+    `;
+}
+
+        message.innerHTML = previewHtml + html;
 
     const img = message.querySelector('img.message-image');
     if (img) {
@@ -791,18 +791,7 @@ function appendMessageWithReplies(boardCode, post, postMap) {
         }
     }
 
-    const downloadBtn = message.querySelector('.download-btn');
-    if (downloadBtn) {
-        downloadBtn.addEventListener('click', () => {
-            const url = downloadBtn.getAttribute('data-url');
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = url.split('/').pop();
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        });
-    }
+    
 
     const replyLinks = message.querySelectorAll('.reply-link');
     replyLinks.forEach(link => {

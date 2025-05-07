@@ -255,7 +255,7 @@ async function fetchBoards() {
         if (boardsList) {
             boardsList.innerHTML = `
                 <div class="error-message">
-                    Unable to load boards. Please check your connection or try again later.
+                    Unable to load boards. Please check your connection visit this proxy site https://cors-anywhere.herokuapp.com/corsdemo
                 </div>`;
         }
         return [];

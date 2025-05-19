@@ -578,6 +578,7 @@ function displayThreads(threads, boardCode) {
         usernameDiv.classList.add('username');
         usernameDiv.textContent = thread.name || 'Anonymous';
 
+        longText = thread.com ? thread.com.replace(/<[^>]+>/g, '') : '';
         let previewText = thread.com ? thread.com.replace(/<[^>]+>/g, '').substring(0, 50) : '';
         if (previewText.length >= 50) previewText += '...';
         const previewDiv = document.createElement('div');
@@ -593,32 +594,13 @@ function displayThreads(threads, boardCode) {
             contentDiv.appendChild(tagsDiv);
         }
 
-        const pinButton = document.createElement('button');
-        pinButton.innerHTML = settings.pinnedThreads.includes(threadId) ? '<i class="fas fa-thumbtack"></i>' : '<i class="far fa-thumbtack"></i>';
-        pinButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            togglePinThread(boardCode, thread.no);
-        });
-
-        const tagButton = document.createElement('button');
-                tagButton.title = 'Add or remove a tag for this thread';
-        tagButton.innerHTML = '<i class="fas fa-tag"></i>';
-        tagButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const tag = prompt('Enter tag for this thread:', tags[0] || '');
-            if (tag && settings.threadTags.includes(tag)) {
-                toggleThreadTag(boardCode, thread.no, tag);
-            } else if (tag) {
-                alert('Please add the tag in Settings first.');
-            }
-        });
+        // Removed pinButton and tagButton creation and event listeners
+        // pinButton and tagButton are no longer appended to threadItem
 
         contentDiv.appendChild(titleDiv);
         contentDiv.appendChild(usernameDiv);
         contentDiv.appendChild(previewDiv);
-        threadItem.appendChild(pinButton);
-        threadItem.appendChild(tagButton);
-        threadItem.appendChild(contentDiv);
+        threadItem.appendChild(contentDiv); // Only append contentDiv, no buttons
 
         threadItem.addEventListener('click', () => openThread(boardCode, thread));
         threadsList.appendChild(threadItem);

@@ -504,15 +504,15 @@ body.dark-mode .thread-item:hover {
     margin: 12px 0;
     border-radius: 18px;
     word-wrap: break-word;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     border: 1px solid rgba(0, 0, 0, 0.1);
     position: relative;
     transform: translateY(20px);
     opacity: 0;
     animation: messageFadeIn 0.4s forwards;
     transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease;
-    font-size: 16px;
-    line-height: 1.5;
+    font-size: 24px;
+    line-height: 1.8;
 }
 
 @keyframes messageFadeIn {
@@ -583,7 +583,7 @@ body.high-contrast .message.reply, body.high-contrast .message.reply-link-start 
 }
 
 .message .username {
-    font-size: 12px;
+    font-size: 19px;
     margin-bottom: 8px;
 }
 

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iChan</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="assets/images/favico.ico" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+<body>
+    <div id="parallax-bg"></div>
+
+    <!-- Start Page: Boards Showcase -->
+    <div id="boards-page" class="page active">
+        <div class="ip-display" id="ip-display">
+            <span id="ip-address"></span>
+            <span id="country-flag"></span>
+        </div>
+        <div class="header">
+            <h1>Boards</h1>
+            <div class="header-buttons">
+                <button id="settings-toggle-boards" class="settings-toggle">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+            </div>
+        </div>
+        <div class="search-container">
+            <input type="text" id="board-search" placeholder="Search boards...">
+            <div id="search-suggestions"></div>
+        </div>
+        <div id="favorite-boards" class="boards-section">
+            <h2>Favorite Boards</h2>
+            <div id="favorite-boards-list"></div>
+        </div>
+        <div id="all-boards" class="boards-section">
+            <h2>All Boards</h2>
+            <div id="boards-list"></div>
+        </div>
+    </div>
+
+    <!-- Thread Page: List of Threads -->
+    <div id="threads-page" class="page">
+        <div class="ip-display" id="ip-display-threads">
+            <span id="ip-address-threads"></span>
+            <span id="country-flag-threads"></span>
+        </div>
+        <div class="header">
+            <button id="back-to-boards-btn">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <h2 id="board-title"></h2>
+            <div class="header-buttons">
+                <button id="dark-mode-toggle-threads" class="dark-mode-toggle">
+                    <i class="fas fa-sun"></i>
+                </button>
+            </div>
+        </div>
+        <div class="filter-container">
+            <input type="text" id="thread-filter" placeholder="Filter threads...">
+            <select id="thread-sort">
+                <option value="default">Default</option>
+                <option value="replies">Most Replies</option>
+                <option value="recent">Most Recent</option>
+            </select>
+            <select id="media-filter">
+                <option value="all">All</option>
+                <option value="images">Images</option>
+                <option value="videos">Videos</option>
+            </select>
+        </div>
+        <div id="threads-list"></div>
+    </div>
+
+    <!-- Thread Detail Page: Messages -->
+    <div id="chat-page" class="page">
+        <div class="header">
+            <button id="back-to-threads-btn">←</button>
+            <h2 id="thread-title"></h2>
+            <div class="header-buttons">
+                <button id="dark-mode-toggle-chat" class="dark-mode-toggle">
+                    <i class="fas fa-sun"></i>
+                </button>
+            </div>
+        </div>
+        <div id="chat-messages"></div>
+    </div>
+
+    <!-- Modal for Enlarged Image -->
+    <div id="image-modal" class="modal">
+        <img id="modal-image" src="" alt="Enlarged Image">
+    </div>
+
+    <!-- Zoom Image Preview -->
+    <div id="zoom-image-preview" class="zoom-image-preview"></div>
+
+    <!-- Reply Preview Popup -->
+    <div id="reply-preview-popup" class="reply-preview-popup"></div>
+
+    <!-- Settings Popup -->
+    <div id="settings-popup" class="settings-popup">
+        <div class="settings-content">
+            <h2>Settings</h2>
+            <button id="settings-close" class="settings-close"><i class="fas fa-times"></i></button>
+            <div class="settings-item">
+                <label for="hover-zoom-toggle">Enable Image Hover Zoom</label>
+                <button id="hover-zoom-toggle" class="aero-toggle" data-checked="true">On</button>
+            </div>
+            <div class="settings-item">
+                <label for="dark-mode-toggle-settings">Dark Mode</label>
+                <button id="dark-mode-toggle-settings" class="aero-toggle dark-mode-toggle" data-checked="false">Off</button>
+            </div>
+            <div class="settings-item">
+                <label for="high-contrast-toggle">High Contrast Text</label>
+                <button id="high-contrast-toggle" class="aero-toggle" data-checked="false">Off</button>
+            </div>
+            <div class="settings-item">
+                <label for="ip-display-toggle">Show IP Address</label>
+                <button id="ip-display-toggle" class="aero-toggle" data-checked="true">On</button>
+            </div>
+            <div class="settings-item">
+                <label for="auto-refresh-toggle">Auto-Refresh Threads</label>
+                <button id="auto-refresh-toggle" class="aero-toggle" data-checked="false">Off</button>
+            </div>
+            <div class="settings-item">
+                <h3>Favorite Boards</h3>
+                <div id="favorite-boards-selector"></div>
+            </div>
+            <div class="settings-item">
+                <h3>Thread Tags</h3>
+                <input type="text" id="thread-tag-input" placeholder="Add new tag...">
+                <div id="thread-tags-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script defer src="script.js"></script>
+</body>
+</html>

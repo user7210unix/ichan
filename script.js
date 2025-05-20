@@ -1,3 +1,4 @@
+// 1.9 version
 // DOM Elements
 const boardsPage = document.getElementById('boards-page');
 const threadsPage = document.getElementById('threads-page');
@@ -38,8 +39,38 @@ const ipDisplayThreads = document.getElementById('ip-display-threads');
 const ipAddressThreads = document.getElementById('ip-address-threads');
 const countryFlagThreads = document.getElementById('country-flag-threads');
 
+
+
+// Constants
 const CORS_PROXY = 'https://cors-anywhere.herokuapp.com/';
+const FALLBACK_PROXY = 'https://api.allorigins.win/raw?url=';
 const API_BASE = 'https://a.4cdn.org/';
+const IMAGE_BASE = 'https://i.4cdn.org/';
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const REQUEST_TIMEOUT = 10000; // 10 seconds
+const MAX_RETRIES = 3;
+
+
+// Cache Handling
+function getCachedData(key) {
+    const cached = localStorage.getItem(key);
+    if (!cached) return null;
+    const { data, timestamp } = JSON.parse(cached);
+    if (Date.now() - timestamp > CACHE_TTL) {
+        localStorage.removeItem(key);
+        return null;
+    }
+    return data;
+}
+
+function setCachedData(key, data) {
+    localStorage.setItem(key, JSON.stringify({ data, timestamp: Date.now() }));
+}
+
+
+
+
+
 
 // Current date for comparison
 const CURRENT_DATE = new Date('2025-05-01');

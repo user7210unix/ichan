@@ -79,7 +79,7 @@ body.dark-mode #boards-page {
 h1, h2 {
     text-align: center;
     margin: 20px 0;
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 600;
 }
 
@@ -117,7 +117,7 @@ body.dark-mode .ip-display {
     justify-content: space-between;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     z-index: 10;
-    height: 48px;
+    height: 44px;
     transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
@@ -134,7 +134,7 @@ body.dark-mode .header {
 .header button {
     background: none;
     border: none;
-    font-size: 18px;
+    font-size: 20px;
     cursor: pointer;
     transition: transform 0.2s ease;
 }
@@ -169,7 +169,7 @@ body.dark-mode .header {
     width: 100%;
     max-width: 500px;
     padding: 10px 15px;
-    font-size: 16px;
+    font-size: 18px;
     border: 1px solid #ccc;
     border-radius: 25px;
     outline: none;
@@ -550,7 +550,7 @@ body.dark-mode .thread-item:hover {
     opacity: 0;
     animation: messageFadeIn 0.4s forwards;
     transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease;
-    font-size: 14px;
+    font-size: 19px;
     line-height: 1.6;
 }
 
@@ -621,7 +621,7 @@ body.high-contrast .message.reply, body.high-contrast .message.reply-link-start 
 }
 
 .message .username {
-    font-size: 13px;
+    font-size: 16px;
     margin-bottom: 8px;
 }
 
@@ -638,7 +638,7 @@ body.dark-mode .message.received .username {
 }
 
 .message .timestamp {
-    font-size: 10px;
+    font-size: 14px;
     margin-left: 8px;
     display: inline;
 }

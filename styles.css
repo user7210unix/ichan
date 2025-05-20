@@ -582,7 +582,7 @@ body.dark-mode .message {
 }
 
 body.dark-mode .message.received {
-    background-color: #b0b0b5;
+    background-color: #343438;
 }
 
 body.high-contrast .message.received {

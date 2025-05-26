@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>4chan</title>
     <link rel="icon" type="image/png" href="assets/images/favicon.ico">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -26,7 +26,7 @@
     <!-- Header -->
     <header class="header fixed-top">
         <div class="container d-flex justify-content-center align-items-center">
-            <img src="assets/images/favicon.ico">
+            <img src="assets/images/favicon.ico" alt="4chan Logo" class="header-logo">
             <h1 class="header-title">4chan</h1>
         </div>
     </header>
@@ -36,83 +36,83 @@
         <!-- Board Selector -->
         <select id="boardSelect" class="form-select mb-3" onchange="loadThreads()" title="Select a board to view threads" aria-label="Select a board">
             <option value="" disabled selected>Select a Board</option>
-<option value="3">3DCG</option>
-<option value="a">Anime & Manga</option>
-<option value="aco">Adult Cartoons</option>
-<option value="adv">Advice</option>
-<option value="an">Animals & Nature</option>
-<option value="asp">Alternative Sports</option>
-<option value="b">Random</option>
-<option value="bant">International/Random</option>
-<option value="biz">Business & Finance</option>
-<option value="c">Anime/Cute</option>
-<option value="cgl">Cosplay & EGL</option>
-<option value="ck">Food & Cooking</option>
-<option value="cm">Cute/Male</option>
-<option value="co">Comics & Cartoons</option>
-<option value="d">Hentai/Alternative</option>
-<option value="diy">Do-It-Yourself</option>
-<option value="e">Ecchi</option>
-<option value="fa">Fashion</option>
-<option value="fit">Fitness</option>
-<option value="g">Technology</option>
-<option value="gd">Graphic Design</option>
-<option value="gif">Adult GIF</option>
-<option value="h">Hentai</option>
-<option value="hc">Hardcore</option>
-<option value="his">History & Humanities</option>
-<option value="hm">Handsome Men</option>
-<option value="hr">High Resolution</option>
-<option value="i">Oekaki</option>
-<option value="ic">Artwork/Critique</option>
-<option value="int">International</option>
-<option value="jp">Otaku Culture</option>
-<option value="k">Weapons</option>
-<option value="lgbt">LGBT</option>
-<option value="lit">Literature</option>
-<option value="m">Mecha</option>
-<option value="mlp">Pony</option>
-<option value="mu">Music</option>
-<option value="n">Transportation</option>
-<option value="news">Current News</option>
-<option value="o">Auto</option>
-<option value="out">Outdoors</option>
-<option value="p">Photography</option>
-<option value="po">Papercraft & Origami</option>
-<option value="pol">Politically Incorrect</option>
-<option value="pw">Professional Wrestling</option>
-<option value="qa">Question & Answer</option>
-<option value="qst">Quests</option>
-<option value="r">Request</option>
-<option value="r9k">ROBOT9001</option>
-<option value="s">Sexy Beautiful Women</option>
-<option value="s4s">Shit 4chan Says</option>
-<option value="sci">Science & Math</option>
-<option value="soc">Cams & Meetups</option>
-<option value="sp">Sports</option>
-<option value="t">Torrents</option>
-<option value="tg">Traditional Games</option>
-<option value="toy">Toys</option>
-<option value="trv">Travel</option>
-<option value="tv">Television & Film</option>
-<option value="u">Yuri</option>
-<option value="v">Video Games</option>
-<option value="vg">Video Game Generals</option>
-<option value="vip">Very Important Posts</option>
-<option value="vm">Video Games/Multiplayer</option>
-<option value="vmg">Video Games/Mobile</option>
-<option value="vp">Pokémon</option>
-<option value="vr">Retro Games</option>
-<option value="vrpg">Video Games/RPG</option>
-<option value="vst">Video Games/Strategy</option>
-<option value="vt">Virtual YouTubers</option>
-<option value="w">Anime/Wallpapers</option>
-<option value="wg">Wallpapers/General</option>
-<option value="wsg">Worksafe GIF</option>
-<option value="wsr">Worksafe Requests</option>
-<option value="x">Paranormal</option>
-<option value="xs">Extreme Sports</option>
-<option value="y">Yaoi</option>
+            <option value="3">3DCG</option>
+            <option value="a">Anime & Manga</option>
+            <option value="aco">Adult Cartoons</option>
+            <option value="adv">Advice</option>
+            <option value="an">Animals & Nature</option>
+            <option value="asp">Alternative Sports</option>
+            <option value="b">Random</option>
+            <option value="bant">International/Random</option>
+            <option value="biz">Business & Finance</option>
+            <option value="c">Anime/Cute</option>
+            <option value="cgl">Cosplay & EGL</option>
+            <option value="ck">Food & Cooking</option>
+            <option value="cm">Cute/Male</option>
+            <option value="co">Comics & Cartoons</option>
+            <option value="d">Hentai/Alternative</option>
+            <option value="diy">Do-It-Yourself</option>
+            <option value="e">Ecchi</option>
+            <option value="fa">Fashion</option>
+            <option value="fit">Fitness</option>
+            <option value="g">Technology</option>
+            <option value="gd">Graphic Design</option>
+            <option value="gif">Adult GIF</option>
+            <option value="h">Hentai</option>
+            <option value="hc">Hardcore</option>
+            <option value="his">History & Humanities</option>
+            <option value="hm">Handsome Men</option>
+            <option value="hr">High Resolution</option>
+            <option value="i">Oekaki</option>
+            <option value="ic">Artwork/Critique</option>
+            <option value="int">International</option>
+            <option value="jp">Otaku Culture</option>
+            <option value="k">Weapons</option>
+            <option value="lgbt">LGBT</option>
+            <option value="lit">Literature</option>
+            <option value="m">Mecha</option>
+            <option value="mlp">Pony</option>
+            <option value="mu">Music</option>
+            <option value="n">Transportation</option>
+            <option value="news">Current News</option>
+            <option value="o">Auto</option>
+            <option value="out">Outdoors</option>
+            <option value="p">Photography</option>
+            <option value="po">Papercraft & Origami</option>
+            <option value="pol">Politically Incorrect</option>
+            <option value="pw">Professional Wrestling</option>
+            <option value="qa">Question & Answer</option>
+            <option value="qst">Quests</option>
+            <option value="r">Request</option>
+            <option value="r9k">ROBOT9001</option>
+            <option value="s">Sexy Beautiful Women</option>
+            <option value="s4s">Shit 4chan Says</option>
+            <option value="sci">Science & Math</option>
+            <option value="soc">Cams & Meetups</option>
+            <option value="sp">Sports</option>
+            <option value="t">Torrents</option>
+            <option value="tg">Traditional Games</option>
+            <option value="toy">Toys</option>
+            <option value="trv">Travel</option>
+            <option value="tv">Television & Film</option>
+            <option value="u">Yuri</option>
+            <option value="v">Video Games</option>
+            <option value="vg">Video Game Generals</option>
+            <option value="vip">Very Important Posts</option>
+            <option value="vm">Video Games/Multiplayer</option>
+            <option value="vmg">Video Games/Mobile</option>
+            <option value="vp">Pokémon</option>
+            <option value="vr">Retro Games</option>
+            <option value="vrpg">Video Games/RPG</option>
+            <option value="vst">Video Games/Strategy</option>
+            <option value="vt">Virtual YouTubers</option>
+            <option value="w">Anime/Wallpapers</option>
+            <option value="wg">Wallpapers/General</option>
+            <option value="wsg">Worksafe GIF</option>
+            <option value="wsr">Worksafe Requests</option>
+            <option value="x">Paranormal</option>
+            <option value="xs">Extreme Sports</option>
+            <option value="y">Yaoi</option>
         </select>
 
         <!-- Thread List -->
@@ -141,7 +141,7 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.5/purify.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

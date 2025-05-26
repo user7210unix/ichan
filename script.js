@@ -6,6 +6,15 @@ const maxRetries = 3;
 const requestTimeout = 10000; // 10 seconds
 const cacheTTL = 5 * 60 * 1000; // 5 minutes
 
+// Show/Hide Loading Screen
+function showLoadingScreen() {
+    document.getElementById('loadingScreen').style.display = 'flex';
+}
+
+function hideLoadingScreen() {
+    document.getElementById('loadingScreen').style.display = 'none';
+}
+
 // Header Scroll Behavior
 let lastScrollTop = 0;
 window.addEventListener('scroll', () => {
@@ -18,6 +27,19 @@ window.addEventListener('scroll', () => {
     }
     lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
 });
+
+// Image Error Handler
+function handleImageError(imgElement) {
+    imgElement.src = ''; // Clear the broken image
+    const parent = imgElement.parentNode;
+    if (parent) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.textContent = 'Image failed to load';
+        parent.insertBefore(errorDiv, imgElement);
+        parent.removeChild(imgElement); // Remove the broken image
+    }
+}
 
 // Image Preview (Cursor-Following)
 function setupImagePreviews() {
@@ -75,14 +97,13 @@ function setCachedData(key, data) {
 async function fetchWithRetry(url, retries = maxRetries, useFallback = false) {
     const proxy = useFallback ? fallbackProxy : corsProxy;
     const cacheKey = `4chan_${url}`;
-    const loadingScreen = document.getElementById('loadingScreen');
-    loadingScreen.style.display = 'flex';
+    showLoadingScreen();
 
     // Check cache
     const cachedData = getCachedData(cacheKey);
     if (cachedData) {
         console.log(`Using cached data for ${url}`);
-        loadingScreen.style.display = 'none';
+        hideLoadingScreen();
         return cachedData;
     }
 
@@ -121,7 +142,7 @@ async function fetchWithRetry(url, retries = maxRetries, useFallback = false) {
         }
         throw error;
     } finally {
-        loadingScreen.style.display = 'none';
+        hideLoadingScreen();
     }
 }
 
@@ -163,10 +184,11 @@ async function loadThreads() {
             page.threads.forEach(thread => {
                 const card = document.createElement('div');
                 card.className = 'col-md-4 mb-4';
+                const imgSrc = thread.tim ? `${corsProxy}${baseImageUrl}/${board}/${thread.tim}${thread.ext}` : '';
                 card.innerHTML = `
                     <div class="card" onclick="loadThreadDetails('${board}', ${thread.no})">
-                        ${thread.tim ? `
-                            <img src="${baseImageUrl}/${board}/${thread.tim}${thread.ext}" class="card-img-top" alt="Thread image">
+                        ${imgSrc ? `
+                            <img src="${imgSrc}" class="card-img-top" alt="Thread image">
                         ` : ''}
                         <div class="card-body">
                             <h5 class="card-title">${thread.sub || 'No Subject'}</h5>
@@ -175,6 +197,11 @@ async function loadThreads() {
                         </div>
                     </div>
                 `;
+                // Attach error handler to image
+                if (imgSrc) {
+                    const img = card.querySelector('.card-img-top');
+                    img.onerror = () => handleImageError(img);
+                }
                 postsContainer.appendChild(card);
             });
         });
@@ -256,13 +283,27 @@ function createMessage(post, board, isOP) {
         return `<span class="reply-link" onclick="scrollToPost(${postNo})">>>${postNo}</span>`;
     });
 
+    const imgSrc = post.tim ? `${corsProxy}${baseImageUrl}/${board}/${post.tim}${post.ext}` : '';
     message.innerHTML = `
-        ${post.tim ? `
-            <img src="${baseImageUrl}/${board}/${post.tim}${post.ext}" alt="Post image" aria-label="Click to view full-size image">
+        ${imgSrc ? `
+            <div class="image-loading">Loading image...</div>
+            <img src="${imgSrc}" alt="Post image" aria-label="Click to view full-size image">
         ` : ''}
         <p>${comment}</p>
         <p class="post-no">Post #${post.no}</p>
     `;
+
+    // Attach error handler to image
+    if (imgSrc) {
+        const img = message.querySelector('img');
+        img.onerror = () => handleImageError(img);
+        img.onload = () => {
+            const loadingDiv = img.previousElementSibling;
+            if (loadingDiv && loadingDiv.className === 'image-loading') {
+                loadingDiv.style.display = 'none';
+            }
+        };
+    }
 
     messageContainer.appendChild(message);
     return messageContainer;

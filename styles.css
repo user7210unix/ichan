@@ -1,19 +1,31 @@
 @font-face {
     font-family: 'SF-Pro';
     src: url('assets/fonts/SF-Pro.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
 }
 
 :root {
+    --accent-color: #007aff;
+    --accent-color-rgb: 0, 122, 255;
     --bottom-glow: radial-gradient(farthest-corner at bottom center, rgba(255, 255, 255, 0.7), transparent);
+    --text-shadow-light: 0 1px 2px rgba(0, 0, 0, 0.3), 0 0 4px rgba(0, 0, 0, 0.1);
+    --text-shadow-dark: 0 1px 2px rgba(0, 0, 0, 0.5), 0 0 4px rgba(0, 0, 0, 0.2);
+    --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    --card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.15);
+    --card-shadow-dark: 0 4px 16px rgba(0, 0, 0, 0.3);
+    --card-shadow-dark-hover: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 body {
     margin: 0;
-    font-family: 'SF-Pro', sans-serif;
+    font-family: 'SF-Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background-color: #fafafa;
     color: #333;
     position: relative;
     overflow-x: hidden;
+    line-height: 1.5;
+    font-size: 16px;
 }
 
 body.dark-mode {
@@ -30,7 +42,7 @@ body.high-contrast .message .username,
 body.high-contrast .message .timestamp,
 body.high-contrast .message-content {
     color: #fff !important;
-    text-shadow: 0 0 2px #000, 0 0 4px #000 !important;
+    text-shadow: var(--text-shadow-dark) !important;
 }
 
 #parallax-bg {
@@ -39,13 +51,15 @@ body.high-contrast .message-content {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, rgba(0, 122, 255, 0.05), rgba(0, 255, 127, 0.05));
+    background: linear-gradient(135deg, rgba(var(--accent-color-rgb), 0.05), rgba(0, 255, 127, 0.05));
     background-attachment: fixed;
     z-index: -1;
+    opacity: 0.8;
+    transition: background 0.3s ease;
 }
 
 body.dark-mode #parallax-bg {
-    background: linear-gradient(135deg, rgba(0, 122, 255, 0.1), rgba(0, 255, 127, 0.1));
+    background: linear-gradient(135deg, rgba(var(--accent-color-rgb), 0.1), rgba(0, 255, 127, 0.1));
 }
 
 .page {
@@ -56,7 +70,14 @@ body.dark-mode #parallax-bg {
     z-index: 1;
     background: rgba(255, 255, 255, 0.95);
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(20px);
+}
+
+.page.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
 }
 
 #boards-page {
@@ -71,16 +92,16 @@ body.dark-mode #boards-page {
     background: rgba(42, 42, 42, 0.95);
 }
 
-.page.active {
-    display: block;
-    opacity: 1;
-}
-
 h1, h2 {
     text-align: center;
     margin: 20px 0;
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 600;
+    text-shadow: var(--text-shadow-light);
+}
+
+body.dark-mode h1, body.dark-mode h2 {
+    text-shadow: var(--text-shadow-dark);
 }
 
 /* IP Display */
@@ -90,6 +111,10 @@ h1, h2 {
     font-size: 14px;
     color: #666;
     display: none;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    margin: 10px auto;
+    max-width: 300px;
 }
 
 .ip-display.active {
@@ -98,6 +123,7 @@ h1, h2 {
 
 body.dark-mode .ip-display {
     color: #aaa;
+    background: rgba(42, 42, 42, 0.8);
 }
 
 .ip-display span {
@@ -108,17 +134,17 @@ body.dark-mode .ip-display {
 .header {
     position: sticky;
     top: 0;
-    background-color: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    padding: 8px 15px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 10px 15px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--card-shadow);
     z-index: 10;
-    height: 44px;
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    height: 48px;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
 }
 
 .header.hidden {
@@ -127,33 +153,35 @@ body.dark-mode .ip-display {
 }
 
 body.dark-mode .header {
-    background-color: rgba(42, 42, 42, 0.8);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    background: rgba(42, 42, 42, 0.85);
+    box-shadow: var(--card-shadow-dark);
 }
 
 .header button {
     background: none;
     border: none;
-    font-size: 20px;
+    font-size: 22px;
     cursor: pointer;
-    transition: transform 0.2s ease;
+    transition: transform 0.2s ease, color 0.2s ease;
+    color: var(--accent-color);
 }
 
 .header button:hover {
-    transform: scale(1.1);
+    transform: scale(1.15);
+    color: #005bb5;
 }
 
 .header button:focus {
-    outline: 2px solid #007aff;
+    outline: 2px solid var(--accent-color);
     outline-offset: 2px;
 }
 
 .header-buttons {
     display: flex;
-    gap: 10px;
+    gap: 12px;
 }
 
-.dark-mode-toggle, .settings-toggle {
+.dark-mode-toggle, .settings-toggle, .gallery-toggle {
     font-size: 20px;
 }
 
@@ -167,23 +195,24 @@ body.dark-mode .header {
 
 #board-search {
     width: 100%;
-    max-width: 500px;
-    padding: 10px 15px;
-    font-size: 18px;
+    max-width: 600px;
+    padding: 12px 18px;
+    font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 25px;
     outline: none;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    background: rgba(255, 255, 255, 0.9);
 }
 
 #board-search:focus {
-    border-color: #007aff;
-    box-shadow: 0 0 8px rgba(0, 122, 255, 0.3);
-    outline: 2px solid #007aff;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 10px rgba(var(--accent-color-rgb), 0.3);
+    outline: 2px solid var(--accent-color);
 }
 
 body.dark-mode #board-search {
-    background-color: #2a2a2a;
+    background: #2a2a2a;
     border-color: #555;
     color: #e0e0e0;
 }
@@ -194,17 +223,17 @@ body.dark-mode #board-search {
     left: 50%;
     transform: translateX(-50%);
     width: 100%;
-    max-width: 500px;
-    background-color: #fff;
+    max-width: 600px;
+    background: #fff;
     border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    max-height: 200px;
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    max-height: 250px;
     overflow-y: auto;
     z-index: 10;
     display: none;
     opacity: 0;
-    transition: opacity 0.2s ease;
+    transition: opacity 0.3s ease;
 }
 
 #search-suggestions.active {
@@ -213,17 +242,17 @@ body.dark-mode #board-search {
 }
 
 body.dark-mode #search-suggestions {
-    background-color: #2a2a2a;
+    background: #2a2a2a;
     border-color: #555;
 }
 
 .suggestion-item {
-    padding: 10px 15px;
+    padding: 12px 18px;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, transform 0.2s ease;
     opacity: 0;
     transform: translateY(10px);
-    animation: slideIn 0.3s forwards;
+    animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 @keyframes slideIn {
@@ -240,21 +269,27 @@ body.dark-mode #search-suggestions {
 .suggestion-item:nth-child(5) { animation-delay: 0.25s; }
 
 .suggestion-item:hover {
-    background-color: #f0f0f0;
+    background: #f0f0f0;
+    transform: translateY(-2px);
 }
 
 body.dark-mode .suggestion-item:hover {
-    background-color: #3a3a3a;
+    background: #3a3a3a;
 }
 
 .suggestion-item span {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 500;
+    text-shadow: var(--text-shadow-light);
+}
+
+body.dark-mode .suggestion-item span {
+    text-shadow: var(--text-shadow-dark);
 }
 
 .suggestion-item p {
-    margin: 2px 0 0;
-    font-size: 12px;
+    margin: 4px 0 0;
+    font-size: 13px;
     color: #666;
 }
 
@@ -266,38 +301,46 @@ body.dark-mode .suggestion-item p {
 .filter-container {
     padding: 10px 15px;
     display: flex;
-    gap: 10px;
-    max-width: 800px;
+    gap: 12px;
+    max-width: 900px;
     margin: 0 auto;
     flex-wrap: wrap;
+    justify-content: center;
 }
 
 #thread-filter, #thread-sort, #media-filter {
-    padding: 8px;
+    padding: 10px;
     border: 1px solid #ccc;
-    border-radius: 8px;
+    border-radius: 12px;
     font-size: 14px;
+    background: rgba(255, 255, 255, 0.9);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 #thread-filter {
     flex: 1;
-    min-width: 150px;
+    min-width: 200px;
 }
 
 #thread-sort, #media-filter {
-    min-width: 120px;
+    min-width: 140px;
+}
+
+#thread-filter:focus, #thread-sort:focus, #media-filter:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 8px rgba(var(--accent-color-rgb), 0.3);
 }
 
 body.dark-mode #thread-filter, body.dark-mode #thread-sort, body.dark-mode #media-filter {
-    background-color: #2a2a2a;
+    background: #2a2a2a;
     border-color: #555;
     color: #e0e0e0;
 }
 
 /* Boards Page */
 .boards-section {
-    padding: 10px 15px;
-    max-width: 800px;
+    padding: 15px;
+    max-width: 900px;
     margin: 0 auto;
 }
 
@@ -311,26 +354,22 @@ body.dark-mode #thread-filter, body.dark-mode #thread-sort, body.dark-mode #medi
 
 .board-item {
     padding: 15px;
-    margin: 8px 0;
-    background-color: #fff;
+    margin: 10px 0;
+    background: #fff;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--card-shadow);
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
     display: flex;
     justify-content: space-between;
     align-items: center;
     opacity: 0;
     transform: translateY(20px);
-    animation: fadeInUp 0.4s forwards;
+    animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 #favorite-boards .board-item {
-    background-color: #f5faff;
-}
-
-#favorite-boards .board-item:hover {
-    transform: translateY(-3px) scale(1.02);
+    background: linear-gradient(135deg, rgba(var(--accent-color-rgb), 0.1), #f5faff);
 }
 
 @keyframes fadeInUp {
@@ -347,30 +386,35 @@ body.dark-mode #thread-filter, body.dark-mode #thread-sort, body.dark-mode #medi
 .board-item:nth-child(5) { animation-delay: 0.3s; }
 
 body.dark-mode .board-item {
-    background-color: #2a2a2a;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    background: #2a2a2a;
+    box-shadow: var(--card-shadow-dark);
 }
 
 body.dark-mode #favorite-boards .board-item {
-    background-color: #3a3a3a;
+    background: linear-gradient(135deg, rgba(var(--accent-color-rgb), 0.15), #3a3a3a);
 }
 
 .board-item:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: var(--card-shadow-hover);
 }
 
 body.dark-mode .board-item:hover {
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--card-shadow-dark-hover);
 }
 
 .board-item span {
     font-size: 18px;
     font-weight: 500;
+    text-shadow: var(--text-shadow-light);
+}
+
+body.dark-mode .board-item span {
+    text-shadow: var(--text-shadow-dark);
 }
 
 .board-item p {
-    margin: 5px 0 0;
+    margin: 6px 0 0;
     font-size: 14px;
     color: #666;
 }
@@ -381,36 +425,36 @@ body.dark-mode .board-item p {
 
 /* Threads Page */
 #threads-list {
-    padding: 10px 15px;
-    max-width: 800px;
+    padding: 15px;
+    max-width: 900px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 15px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
 }
 
 .thread-item {
     position: relative;
-    background-color: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.9);
     padding: 15px;
     margin: 8px 0;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--card-shadow);
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
     overflow: hidden;
     opacity: 0;
     transform: translateY(20px);
-    animation: fadeInUp 0.4s forwards;
+    animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 .thread-item.pinned {
     border: 2px solid #ffd700;
-    background-color: rgba(255, 245, 200, 0.85);
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 245, 200, 0.9));
 }
 
 body.dark-mode .thread-item.pinned {
-    background-color: rgba(80, 70, 50, 0.85);
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(80, 70, 50, 0.9));
 }
 
 .thread-item.has-image::before {
@@ -423,6 +467,12 @@ body.dark-mode .thread-item.pinned {
     background-size: cover;
     background-position: center;
     z-index: -1;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.thread-item:hover::before {
+    opacity: 0.9;
 }
 
 .thread-item::after {
@@ -432,49 +482,53 @@ body.dark-mode .thread-item.pinned {
     left: 0;
     width: 100%;
     height: 70%;
-    background: linear-gradient(to top, rgba(255, 255, 255, 1), transparent);
+    background: linear-gradient(to top, rgba(255, 255, 255, 0.95), transparent);
     z-index: 0;
 }
 
 body.dark-mode .thread-item::after {
-    background: linear-gradient(to top, rgba(42, 42, 42, 1), transparent);
+    background: linear-gradient(to top, rgba(42, 42, 42, 0.95), transparent);
 }
 
 .thread-item .content {
     position: relative;
     z-index: 1;
     margin-top: auto;
-    padding: 10px;
+    padding: 12px;
 }
 
 .thread-item .thread-title {
     font-size: 16px;
-    font-weight: 500;
+    font-weight: 600;
     margin-bottom: 8px;
     color: #000;
+    text-shadow: var(--text-shadow-light);
 }
 
 .thread-item .thread-preview {
-    font-size: 12px;
+    font-size: 13px;
     color: #000;
     margin-top: 8px;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    line-height: 1.4;
+    line-height: 1.5;
+    text-shadow: var(--text-shadow-light);
 }
 
 .thread-item .username {
     font-size: 14px;
     color: #000;
     margin-bottom: 4px;
+    text-shadow: var(--text-shadow-light);
 }
 
 .thread-item .thread-tags {
     font-size: 12px;
     color: #000;
     margin-top: 4px;
+    text-shadow: var(--text-shadow-light);
 }
 
 /* Light and Dark Text for Image Backgrounds */
@@ -483,7 +537,7 @@ body.dark-mode .thread-item::after {
 .thread-item.light-text .username,
 .thread-item.light-text .thread-tags {
     color: #fff;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    text-shadow: var(--text-shadow-dark);
 }
 
 .thread-item.dark-text .thread-title,
@@ -491,7 +545,7 @@ body.dark-mode .thread-item::after {
 .thread-item.dark-text .username,
 .thread-item.dark-text .thread-tags {
     color: #000;
-    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+    text-shadow: var(--text-shadow-light);
 }
 
 body.dark-mode .thread-item.light-text .thread-title,
@@ -499,7 +553,7 @@ body.dark-mode .thread-item.light-text .thread-preview,
 body.dark-mode .thread-item.light-text .username,
 body.dark-mode .thread-item.light-text .thread-tags {
     color: #e0e0e0;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    text-shadow: var(--text-shadow-dark);
 }
 
 body.dark-mode .thread-item.dark-text .thread-title,
@@ -507,7 +561,7 @@ body.dark-mode .thread-item.dark-text .thread-preview,
 body.dark-mode .thread-item.dark-text .username,
 body.dark-mode .thread-item.dark-text .thread-tags {
     color: #333;
-    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+    text-shadow: var(--text-shadow-light);
 }
 
 .thread-item:nth-child(1) { animation-delay: 0.1s; }
@@ -517,40 +571,79 @@ body.dark-mode .thread-item.dark-text .thread-tags {
 .thread-item:nth-child(5) { animation-delay: 0.3s; }
 
 body.dark-mode .thread-item {
-    background-color: rgba(42, 42, 42, 0.85);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    background: rgba(42, 42, 42, 0.9);
+    box-shadow: var(--card-shadow-dark);
 }
 
 .thread-item:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: var(--card-shadow-hover);
 }
 
 body.dark-mode .thread-item:hover {
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--card-shadow-dark-hover);
+}
+
+/* Thread Buttons */
+.thread-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.thread-buttons button {
+    background: var(--accent-color);
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.thread-buttons button:hover {
+    background: #005bb5;
+    transform: scale(1.05);
+}
+
+body.dark-mode .thread-buttons button {
+    background: #005bb5;
+}
+
+body.dark-mode .thread-buttons button:hover {
+    background: #003f7f;
+}
+
+/* Focused Thread for Keyboard Navigation */
+.thread-item.focused {
+    outline: 2px solid var(--accent-color);
+    transform: scale(1.03);
+    box-shadow: var(--card-shadow-hover);
 }
 
 /* Chat Page */
 #chat-messages {
     padding: 15px;
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
 }
 
 .message {
     max-width: 80%;
-    padding: 12px 16px;
+    padding: 14px 18px;
     margin: 12px 0;
     border-radius: 18px;
     word-wrap: break-word;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--card-shadow);
     border: 1px solid rgba(0, 0, 0, 0.1);
     position: relative;
     transform: translateY(20px);
     opacity: 0;
-    animation: messageFadeIn 0.4s forwards;
+    animation: messageFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease;
-    font-size: 19px;
+    font-size: 15px;
     line-height: 1.6;
 }
 
@@ -573,60 +666,70 @@ body.dark-mode .message {
 
 .message:hover {
     transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--card-shadow-hover);
+}
+
+.message.new-post {
+    background: rgba(var(--accent-color-rgb), 0.1);
 }
 
 .message.received {
     margin-right: auto;
-    background-color: #e5e5ea;
+    background: #e5e5ea;
 }
 
 body.dark-mode .message.received {
-    background-color: #343438;
+    background: #343438;
 }
 
 body.high-contrast .message.received {
-    background-color: #808080;
+    background: #808080;
 }
 
 .message.reply, .message.reply-link-start {
     margin-left: auto;
-    background-color: #007aff;
+    background: var(--accent-color);
     color: #e0e0e0;
     border: none;
 }
 
 body.dark-mode .message.reply, body.dark-mode .message.reply-link-start {
-    background-color: #005bb5;
+    background: #005bb5;
     color: #e0e0e0;
 }
 
 body.high-contrast .message.reply, body.high-contrast .message.reply-link-start {
-    background-color: #0000ff;
+    background: #0000ff;
     color: #fff;
 }
 
 .message img {
     max-width: 80%;
     height: auto;
-    border-radius: 10px;
-    margin-top: 8px;
+    border-radius: 12px;
+    margin-top: 10px;
     cursor: pointer;
-    transition: transform 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .message img:hover {
-    box-shadow: none;
-    transform: scale(1.02);
+    transform: scale(1.03);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .message .username {
     font-size: 16px;
+    font-weight: 500;
     margin-bottom: 8px;
+    text-shadow: var(--text-shadow-light);
+}
+
+body.dark-mode .message .username {
+    text-shadow: var(--text-shadow-dark);
 }
 
 .message.received .username {
-    color: #007aff;
+    color: var(--accent-color);
 }
 
 body.dark-mode .message.received .username {
@@ -638,16 +741,13 @@ body.dark-mode .message.received .username {
 }
 
 .message .timestamp {
-    font-size: 14px;
+    font-size: 13px;
     margin-left: 8px;
     display: inline;
-}
-
-.message.received .timestamp {
     color: #999;
 }
 
-body.dark-mode .message.received .timestamp {
+body.dark-mode .message .timestamp {
     color: #bbb;
 }
 
@@ -663,7 +763,12 @@ body.dark-mode .message.received .timestamp {
     border: none;
     font-size: 16px;
     cursor: pointer;
-    color: #007aff;
+    color: var(--accent-color);
+    transition: transform 0.2s ease;
+}
+
+.message .download-btn:hover {
+    transform: scale(1.2);
 }
 
 .message.reply .download-btn, .message.reply-link-start .download-btn {
@@ -675,9 +780,10 @@ body.dark-mode .message .download-btn {
 }
 
 .reply-link {
-    color: #007aff;
+    color: var(--accent-color);
     cursor: pointer;
     text-decoration: none;
+    transition: color 0.2s ease;
 }
 
 .message.reply .reply-link, .message.reply-link-start .reply-link {
@@ -690,6 +796,7 @@ body.dark-mode .reply-link {
 
 .reply-link:hover {
     text-decoration: underline;
+    color: #005bb5;
 }
 
 .greentext {
@@ -697,10 +804,12 @@ body.dark-mode .reply-link {
     display: block;
     margin: 8px 0;
     line-height: 1.6;
+    text-shadow: var(--text-shadow-light);
 }
 
 body.dark-mode .greentext {
     color: #99cc33;
+    text-shadow: var(--text-shadow-dark);
 }
 
 .message-content {
@@ -713,11 +822,11 @@ body.dark-mode .greentext {
 }
 
 .reply-preview {
-    background-color: #f0f0f0;
-    padding: 5px 10px;
+    background: #f0f0f0;
+    padding: 6px 12px;
     border-radius: 8px;
     margin-bottom: 8px;
-    font-size: 10px;
+    font-size: 12px;
     color: #666;
     max-width: 100%;
     overflow: hidden;
@@ -726,7 +835,7 @@ body.dark-mode .greentext {
 }
 
 body.dark-mode .reply-preview {
-    background-color: #3a3a3a;
+    background: #3a3a3a;
     color: #aaa;
 }
 
@@ -735,30 +844,37 @@ body.dark-mode .reply-preview {
     max-height: 40px;
     opacity: 0.5;
     vertical-align: middle;
-    margin-right: 5px;
+    margin-right: 8px;
+    border-radius: 4px;
 }
 
 /* Reply Preview Popup */
 .reply-preview-popup {
     display: none;
     position: absolute;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    padding: 10px;
-    max-width: 300px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    padding: 12px;
+    max-width: 320px;
     z-index: 1000;
-    font-size: 12px;
+    font-size: 13px;
+    transition: left 0.1s ease, top 0.1s ease;
+}
+
+.reply-preview-popup.active {
+    display: block;
 }
 
 body.dark-mode .reply-preview-popup {
-    background-color: #2a2a2a;
+    background: #2a2a2a;
+    box-shadow: var(--card-shadow-dark);
 }
 
 .reply-preview-popup img {
     max-width: 100px;
-    border-radius: 4px;
-    margin-top: 5px;
+    border-radius: 6px;
+    margin-top: 8px;
 }
 
 /* Zoom Image Preview */
@@ -773,9 +889,32 @@ body.dark-mode .reply-preview-popup {
     max-width: 650px;
     max-height: 650px;
     object-fit: contain;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
 }
+
+/* Gallery Mode */
+#chat-messages.gallery-mode {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 15px;
+    padding: 15px;
+}
+
+.gallery-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.gallery-image img:hover {
+    transform: scale(1.05);
+    box-shadow: var(--card-shadow-hover);
+}
+
+
 
 /* Settings Popup */
 .settings-popup {
@@ -785,7 +924,7 @@ body.dark-mode .reply-preview-popup {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.6);
     z-index: 100;
     justify-content: center;
     align-items: center;
@@ -796,16 +935,16 @@ body.dark-mode .reply-preview-popup {
 }
 
 .settings-content {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 12px;
+    background: #fff;
+    padding: 25px;
+    border-radius: 16px;
     width: 90%;
-    max-width: 400px;
+    max-width: 450px;
+    box-shadow: var(--card-shadow);
     position: relative;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     transform: translateY(-50px);
     opacity: 0;
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
 }
 
 .settings-popup.active .settings-content {
@@ -814,41 +953,50 @@ body.dark-mode .reply-preview-popup {
 }
 
 body.dark-mode .settings-content {
-    background-color: #2a2a2a;
+    background: #2a2a2a;
+    box-shadow: var(--card-shadow-dark);
 }
 
 .settings-content h2 {
     margin-top: 0;
+    font-size: 22px;
 }
 
 .settings-close {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 12px;
+    right: 12px;
     background: none;
     border: none;
-    font-size: 20px;
+    font-size: 22px;
     cursor: pointer;
+    color: var(--accent-color);
+}
+
+.settings-close:hover {
+    transform: scale(1.15);
 }
 
 .settings-item {
-    margin: 15px 0;
+    margin: 20px 0;
 }
 
 .settings-item label {
-    margin-right: 10px;
+    margin-right: 12px;
+    font-weight: 500;
 }
 
 #favorite-boards-selector, #thread-tags-list {
-    max-height: 200px;
+    max-height: 220px;
     overflow-y: auto;
+    padding-right: 10px;
 }
 
 .favorite-board-item, .thread-tag-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 0;
+    padding: 10px 0;
 }
 
 .thread-tag-item button {
@@ -856,6 +1004,12 @@ body.dark-mode .settings-content {
     border: none;
     color: #ff3b30;
     cursor: pointer;
+    font-size: 16px;
+    transition: transform 0.2s ease;
+}
+
+.thread-tag-item button:hover {
+    transform: scale(1.2);
 }
 
 /* Aero Toggle Buttons */
@@ -864,19 +1018,18 @@ body.dark-mode .settings-content {
     --button-background: oklch(75% 0.1 var(--hue) / 0.8);
     --bg-dark: oklch(45% 0.1 var(--hue) / 0.75);
     --button-foreground: oklch(15% 0.05 var(--hue));
-    background-color: var(--button-background);
     background: var(--bottom-glow), linear-gradient(to bottom, var(--bg-dark), var(--button-background));
-    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--card-shadow);
     border: 1px solid var(--button-background);
     border-radius: 9999px;
     cursor: pointer;
-    padding: 8px 16px;
+    padding: 10px 20px;
     position: relative;
-    text-shadow: 0 2px 0.5em rgba(0, 0, 0, 0.2);
-    transition: all 300ms;
+    text-shadow: var(--text-shadow-light);
+    transition: all 0.3s ease;
     color: var(--button-foreground);
     font-family: 'SF-Pro', sans-serif;
-    font-weight: 700;
+    font-weight: 600;
     font-size: 14px;
 }
 
@@ -889,16 +1042,17 @@ body.dark-mode .settings-content {
     height: 40%;
     background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.1));
     border-radius: 9999px;
-    transition: background 400ms;
+    transition: background 0.4s ease;
 }
 
 .aero-toggle:hover,
 .aero-toggle:focus {
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--card-shadow-hover);
+    transform: scale(1.05);
 }
 
 .aero-toggle:active {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .aero-toggle[data-checked="false"] {
@@ -906,7 +1060,6 @@ body.dark-mode .settings-content {
     --button-background: oklch(75% 0 var(--hue) / 0.8);
     --bg-dark: oklch(45% 0 var(--hue) / 0.75);
     --button-foreground: #333;
-    background-color: #ccc;
     background: var(--bottom-glow), linear-gradient(to bottom, #aaa, #ccc);
     border: 1px solid #ccc;
 }
@@ -919,7 +1072,7 @@ body.dark-mode .settings-content {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.85);
+    background: rgba(0, 0, 0, 0.9);
     z-index: 100;
     justify-content: center;
     align-items: center;
@@ -930,12 +1083,12 @@ body.dark-mode .settings-content {
 }
 
 #modal-image {
-    max-width: 90%;
-    max-height: 90vh;
-    border-radius: 10px;
+    max-width: 95%;
+    max-height: 95vh;
+    border-radius: 12px;
     transform: scale(0.95);
     opacity: 0;
-    transition: transform 0.2s ease, opacity 0.2s ease;
+    transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 .modal.active #modal-image {
@@ -943,10 +1096,28 @@ body.dark-mode .settings-content {
     opacity: 1;
 }
 
+/* Error Message */
+.error-message {
+    text-align: center;
+    padding: 20px;
+    background: rgba(255, 75, 75, 0.1);
+    border: 1px solid #ff3b30;
+    border-radius: 12px;
+    margin: 15px;
+    color: #333;
+    font-size: 15px;
+    box-shadow: var(--card-shadow);
+}
+
+body.dark-mode .error-message {
+    background: rgba(255, 75, 75, 0.2);
+    color: #e0e0e0;
+}
+
 /* Scrollbar Styling */
 #chat-messages, #favorite-boards-selector, #search-suggestions, #thread-tags-list {
     scrollbar-width: thin;
-    scrollbar-color: #007aff #e0e0e0;
+    scrollbar-color: var(--accent-color) #e0e0e0;
 }
 
 body.dark-mode #chat-messages,
@@ -956,6 +1127,12 @@ body.dark-mode #thread-tags-list {
     scrollbar-color: #66b0ff #2a2a2a;
 }
 
+/* Accessibility */
+:focus {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
 /* Responsiveness */
 @media (max-width: 768px) {
     h1, h2 {
@@ -963,12 +1140,12 @@ body.dark-mode #thread-tags-list {
     }
 
     .header {
-        padding: 6px 10px;
-        height: 40px;
+        padding: 8px 12px;
+        height: 44px;
     }
 
     .board-item, .thread-item {
-        padding: 10px;
+        padding: 12px;
     }
 
     .board-item span {
@@ -976,42 +1153,42 @@ body.dark-mode #thread-tags-list {
     }
 
     .board-item p {
-        font-size: 12px;
+        font-size: 13px;
     }
 
     .thread-item .thread-title {
-        font-size: 14px;
+        font-size: 15px;
     }
 
     .thread-item .thread-preview {
-        font-size: 10px;
+        font-size: 12px;
     }
 
     .thread-item .username {
-        font-size: 12px;
+        font-size: 13px;
     }
 
     .thread-item .thread-tags {
-        font-size: 10px;
-    }
-
-    .message {
-        padding: 10px 12px;
-        max-width: 90%;
-        margin: 10px 0;
-        font-size: 12px;
-    }
-
-    .message .username {
         font-size: 11px;
     }
 
+    .message {
+        padding: 12px 14px;
+        max-width: 90%;
+        margin: 10px 0;
+        font-size: 14px;
+    }
+
+    .message .username {
+        font-size: 14px;
+    }
+
     .message .timestamp {
-        font-size: 9px;
+        font-size: 12px;
     }
 
     .reply-preview {
-        font-size: 9px;
+        font-size: 11px;
     }
 
     .reply-preview img {
@@ -1020,8 +1197,8 @@ body.dark-mode #thread-tags-list {
     }
 
     .zoom-image-preview img {
-        max-width: 150px;
-        max-height: 150px;
+        max-width: 300px;
+        max-height: 300px;
     }
 
     .search-container, .filter-container {
@@ -1029,8 +1206,8 @@ body.dark-mode #thread-tags-list {
     }
 
     .reply-preview-popup {
-        max-width: 200px;
-        font-size: 10px;
+        max-width: 250px;
+        font-size: 12px;
     }
 
     .reply-preview-popup img {
@@ -1038,8 +1215,8 @@ body.dark-mode #thread-tags-list {
     }
 
     #board-search, #thread-filter {
-        font-size: 14px;
-        padding: 8px 12px;
+        font-size: 15px;
+        padding: 10px 14px;
     }
 
     #search-suggestions {
@@ -1047,18 +1224,33 @@ body.dark-mode #thread-tags-list {
     }
 
     #threads-list {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     }
 
     .aero-toggle {
-        padding: 6px 12px;
-        font-size: 12px;
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+
+    .quick-reply-form textarea {
+        height: 80px;
+    }
+
+    #chat-messages.gallery-mode {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     }
 }
 
-@media (min-width: 769px) {
+@media (min-width: 1200px) {
     #boards-list, #threads-list, #chat-messages {
-        max-width: 800px;
-        margin: 0 auto;
+        max-width: 1100px;
+    }
+
+    .thread-item .thread-title {
+        font-size: 18px;
+    }
+
+    .message {
+        font-size: 16px;
     }
 }

@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://user7210unix.github.io/ichan/"><strong>Live Demo</strong></a> •
-  <a href="#features">Features</a> •
+  <a href="https://cors-anywhere.herokuapp.com/corsdemo">Get Access</a> •
   <a href="#installation">Installation</a> 
 </p>
 

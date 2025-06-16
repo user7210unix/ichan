@@ -710,7 +710,7 @@ body.dark-mode .message.reply, body.dark-mode .message.reply-link-start {
 }
 
 body.dark-mode .message .timestamp {
-    color: var(--dark-text-secondary);
+    color: #cccccc;
 }
 
 .message .message-content {
@@ -726,7 +726,7 @@ body.dark-mode .message .greentext {
 }
 
 .message .reply-link {
-    color: var(--link);
+    color: #cccccc;
     cursor: pointer;
     text-decoration: none;
 }
@@ -736,7 +736,7 @@ body.dark-mode .message .greentext {
 }
 
 body.dark-mode .message .reply-link {
-    color: var(--dark-link);
+    color: #cccccc;
 }
 
 .message img {
@@ -752,8 +752,8 @@ body.dark-mode .message .reply-link {
     background: var(--surface);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-lg);
-    max-width: 400px;
-    max-height: 400px;
+    max-width: 700px;
+    max-height: 700px;
     overflow: hidden;
     z-index: 100;
     display: none;

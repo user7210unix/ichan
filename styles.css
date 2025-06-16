@@ -25,6 +25,7 @@
     --text-primary: #000000;
     --text-secondary: #6c6c6c;
     --reply-timestamp: #FFFFFF; /* White for reply message timestamps */
+	--normal-timestamp: #6C6C6C; /* Medium grey for normal message timestamps */
     --divider: #E0E0E0;
     --greentext: #008a5b;
     --reply-greentext: #A4D65E; /* Lighter green for reply messages */
@@ -708,12 +709,20 @@ body.dark-mode .message.reply, body.dark-mode .message.reply-link-start {
 
 .message .timestamp {
     font-size: 11px;
-    color: var(--text-secondary);
+    color: var(--normal-timestamp);
     margin-left: 8px;
 }
 
 body.dark-mode .message .timestamp {
-    color: var(--dark-text-secondary);
+    color: var(--dark-normal-timestamp);
+}
+
+.message.reply .timestamp, .message.reply-link-start .timestamp {
+    color: var(--reply-timestamp);
+}
+
+body.dark-mode .message.reply .timestamp, body.dark-mode .message.reply-link-start .timestamp {
+    color: var(--dark-reply-timestamp);
 }
 
 .message .message-content {

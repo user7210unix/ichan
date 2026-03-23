@@ -1,193 +1,2444 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iChan | Overlay</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="icon" href="assets/images/favicon.ico" type="image/png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iChan</title>
+<style>
+/* ── System Font Stack (SF Pro) ── */
+:root {
+  --sf: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+  --sf-mono: "SF Mono", "Fira Mono", ui-monospace, monospace;
+
+  /* Brand */
+  --blue:   #007AFF;
+  --blue-d: #0A84FF;
+  --green:  #34C759;
+  --green-d:#30D158;
+  --red:    #FF3B30;
+  --orange: #FF9500;
+  --purple: #AF52DE;
+  --teal:   #5AC8FA;
+
+  /* Light Mode */
+  --bg:           #F2F2F7;
+  --bg-card:      #FFFFFF;
+  --bg-elevated:  #FFFFFF;
+  --bg-grouped:   #F2F2F7;
+  --bg-sidebar:   #F9F9FB;
+  --separator:    rgba(60,60,67,0.12);
+  --separator-op: rgba(60,60,67,0.29);
+  --label:        #000000;
+  --label-2:      rgba(60,60,67,0.6);
+  --label-3:      rgba(60,60,67,0.3);
+  --label-4:      rgba(60,60,67,0.18);
+  --fill:         rgba(120,120,128,0.2);
+  --fill-2:       rgba(120,120,128,0.16);
+  --fill-3:       rgba(118,118,128,0.12);
+  --fill-4:       rgba(116,116,128,0.08);
+
+  /* Bubbles */
+  --bubble-out:   #007AFF;
+  --bubble-out-t: #FFFFFF;
+  --bubble-in:    #E9E9EB;
+  --bubble-in-t:  #000000;
+  --bubble-op:    #D1D1D6;
+  --bubble-op-t:  #000000;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgba(0,0,0,.04);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,.08);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.10);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,.14);
+
+  /* Greentext */
+  --gt-color: #34A853;
+  --gt-reply: rgba(255,255,255,0.85);
+
+  /* Radius */
+  --r-xs: 6px;
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 18px;
+  --r-xl: 22px;
+
+  /* Layout */
+  --sidebar-w: 240px;
+  --header-h: 52px;
+
+  /* Font Size (user adjustable) */
+  --fs-base: 15px;
+  --fs-sm: 13px;
+  --fs-xs: 11px;
+  --fs-lg: 17px;
+}
+
+[data-theme="dark"] {
+  --bg:           #000000;
+  --bg-card:      #1C1C1E;
+  --bg-elevated:  #2C2C2E;
+  --bg-grouped:   #000000;
+  --bg-sidebar:   #1C1C1E;
+  --separator:    rgba(84,84,88,0.65);
+  --separator-op: rgba(84,84,88,0.65);
+  --label:        #FFFFFF;
+  --label-2:      rgba(235,235,245,0.6);
+  --label-3:      rgba(235,235,245,0.3);
+  --label-4:      rgba(235,235,245,0.18);
+  --fill:         rgba(120,120,128,0.36);
+  --fill-2:       rgba(120,120,128,0.32);
+  --fill-3:       rgba(118,118,128,0.24);
+  --fill-4:       rgba(116,116,128,0.18);
+
+  --bubble-out:   #0A84FF;
+  --bubble-out-t: #FFFFFF;
+  --bubble-in:    #3A3A3C;
+  --bubble-in-t:  #FFFFFF;
+  --bubble-op:    #2C2C2E;
+  --bubble-op-t:  #FFFFFF;
+
+  --gt-color: #32D74B;
+  --gt-reply: rgba(255,255,255,0.82);
+
+  --shadow-xs: 0 1px 2px rgba(0,0,0,.3);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,.4);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.5);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,.6);
+}
+
+/* ── Reset & Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; }
+body {
+  font-family: var(--sf);
+  font-size: var(--fs-base);
+  background: var(--bg);
+  color: var(--label);
+  height: 100%;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  transition: background .2s, color .2s;
+}
+a { color: var(--blue); text-decoration: none; }
+img { display: block; }
+button { cursor: pointer; font-family: var(--sf); }
+input, select, textarea { font-family: var(--sf); }
+
+/* ── Layout Shell ── */
+#shell {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ── Sidebar ── */
+#sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--separator);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  transition: width .3s cubic-bezier(.4,0,.2,1), min-width .3s;
+  z-index: 10;
+}
+#sidebar.collapsed { width: 0; min-width: 0; border-right: none; }
+
+#sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--separator);
+  flex-shrink: 0;
+}
+#sidebar-header h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--blue);
+  letter-spacing: -0.5px;
+}
+.sidebar-icon-row {
+  display: flex;
+  gap: 4px;
+}
+
+#board-search-wrap {
+  padding: 8px 12px;
+  flex-shrink: 0;
+}
+#board-search {
+  width: 100%;
+  background: var(--fill-3);
+  border: none;
+  border-radius: var(--r-sm);
+  padding: 7px 10px 7px 30px;
+  font-size: var(--fs-sm);
+  color: var(--label);
+  outline: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238E8E93' stroke-width='2.5'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 9px center;
+  transition: background .15s;
+}
+#board-search:focus { background-color: var(--fill-2); }
+
+#sidebar-tabs {
+  display: flex;
+  padding: 0 12px 8px;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.stab {
+  flex: 1;
+  padding: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  border: none;
+  background: transparent;
+  color: var(--label-2);
+  border-radius: var(--r-sm);
+  transition: background .15s, color .15s;
+}
+.stab.active {
+  background: var(--fill);
+  color: var(--label);
+}
+
+#sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+#sidebar-content::-webkit-scrollbar { width: 4px; }
+#sidebar-content::-webkit-scrollbar-thumb { background: var(--fill); border-radius: 2px; }
+
+.sidebar-section-label {
+  padding: 6px 16px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--label-2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.board-row {
+  display: flex;
+  align-items: center;
+  padding: 9px 16px;
+  cursor: pointer;
+  border-radius: var(--r-sm);
+  margin: 1px 6px;
+  transition: background .1s;
+  gap: 10px;
+}
+.board-row:hover { background: var(--fill-3); }
+.board-row.active { background: var(--fill-2); }
+
+.board-row-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--blue);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.board-row-text { flex: 1; min-width: 0; }
+.board-row-title {
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.board-row-desc {
+  font-size: 11px;
+  color: var(--label-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.board-fav-btn {
+  background: none;
+  border: none;
+  color: var(--label-3);
+  font-size: 14px;
+  padding: 2px;
+  opacity: 0;
+  transition: opacity .15s, color .15s;
+}
+.board-row:hover .board-fav-btn { opacity: 1; }
+.board-fav-btn.faved { color: var(--orange); opacity: 1; }
+
+/* History entries */
+.history-row {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: var(--r-sm);
+  margin: 1px 6px;
+  gap: 10px;
+  transition: background .1s;
+}
+.history-row:hover { background: var(--fill-3); }
+.history-row-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  background: var(--fill-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--label-2);
+  flex-shrink: 0;
+}
+.history-row-text { flex: 1; min-width: 0; }
+.history-row-board { font-size: 12px; font-weight: 600; color: var(--blue); }
+.history-row-title { font-size: 11px; color: var(--label-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.history-row-del {
+  background: none; border: none; color: var(--label-3); font-size: 13px; padding: 2px; opacity: 0;
+}
+.history-row:hover .history-row-del { opacity: 1; }
+
+/* ── Main Area ── */
+#main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* ── Top Bar ── */
+#topbar {
+  height: var(--header-h);
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--separator);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 10px;
+  flex-shrink: 0;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+#topbar-title {
+  flex: 1;
+  font-size: 17px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.topbar-actions { display: flex; gap: 6px; align-items: center; }
+
+/* ── Icon Button ── */
+.ib {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  background: none;
+  border-radius: 50%;
+  color: var(--blue);
+  font-size: 18px;
+  transition: background .15s;
+  flex-shrink: 0;
+}
+.ib:hover { background: var(--fill-3); }
+.ib:active { background: var(--fill-2); transform: scale(.94); }
+.ib svg { width: 20px; height: 20px; }
+
+/* ── View Container ── */
+#view {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ── Boards View ── */
+#view-boards {
+  height: 100%;
+  overflow-y: auto;
+  padding: 20px;
+}
+#view-boards::-webkit-scrollbar { width: 6px; }
+#view-boards::-webkit-scrollbar-thumb { background: var(--fill); border-radius: 3px; }
+
+.boards-hero {
+  text-align: center;
+  padding: 32px 0 24px;
+}
+.boards-hero-logo {
+  font-size: 48px;
+  font-weight: 800;
+  color: var(--blue);
+  letter-spacing: -2px;
+  line-height: 1;
+}
+.boards-hero-sub {
+  font-size: 14px;
+  color: var(--label-2);
+  margin-top: 6px;
+}
+
+.boards-search-container {
+  max-width: 560px;
+  margin: 0 auto 28px;
+  position: relative;
+}
+.boards-search {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--separator);
+  border-radius: var(--r-lg);
+  padding: 12px 16px 12px 42px;
+  font-size: 16px;
+  color: var(--label);
+  outline: none;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow .2s, border-color .2s;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238E8E93' stroke-width='2.5'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 14px center;
+}
+.boards-search:focus { box-shadow: 0 0 0 3px rgba(0,122,255,.15); border-color: var(--blue); }
+
+.boards-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--label-2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+  padding-left: 2px;
+}
+.boards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+  margin-bottom: 28px;
+}
+.board-card {
+  background: var(--bg-card);
+  border-radius: var(--r-md);
+  padding: 14px;
+  cursor: pointer;
+  transition: transform .15s, box-shadow .15s;
+  box-shadow: var(--shadow-xs);
+  border: 1px solid var(--separator);
+}
+.board-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.board-card:active { transform: scale(.97); }
+.board-card-code {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--blue);
+  margin-bottom: 4px;
+}
+.board-card-title {
+  font-size: 13px;
+  font-weight: 500;
+}
+.board-card-desc {
+  font-size: 11px;
+  color: var(--label-2);
+  margin-top: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* ── Threads View ── */
+#view-threads {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+#threads-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--separator);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  background: var(--bg-elevated);
+}
+.filter-input {
+  flex: 1;
+  min-width: 160px;
+  background: var(--fill-3);
+  border: none;
+  border-radius: var(--r-sm);
+  padding: 7px 12px;
+  font-size: var(--fs-sm);
+  color: var(--label);
+  outline: none;
+}
+.filter-input:focus { background: var(--fill-2); }
+.filter-select {
+  background: var(--fill-3);
+  border: none;
+  border-radius: var(--r-sm);
+  padding: 7px 10px;
+  font-size: var(--fs-sm);
+  color: var(--label);
+  outline: none;
+  cursor: pointer;
+}
+
+#threads-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+#threads-list::-webkit-scrollbar { width: 6px; }
+#threads-list::-webkit-scrollbar-thumb { background: var(--fill); border-radius: 3px; }
+
+.thread-card {
+  background: var(--bg-card);
+  border-radius: var(--r-md);
+  padding: 14px;
+  cursor: pointer;
+  border: 1px solid var(--separator);
+  box-shadow: var(--shadow-xs);
+  transition: transform .15s, box-shadow .15s;
+  position: relative;
+}
+.thread-card:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+.thread-card:active { transform: scale(.99); }
+.thread-card.pinned { border-left: 3px solid var(--blue); }
+.thread-card-inner { display: flex; gap: 12px; }
+.thread-card-thumb {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--fill-3);
+}
+.thread-card-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.thread-card-body { flex: 1; min-width: 0; }
+.thread-card-subject {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.thread-card-meta {
+  font-size: 11px;
+  color: var(--label-2);
+  margin-bottom: 5px;
+}
+.thread-card-preview {
+  font-size: 13px;
+  color: var(--label-2);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.4;
+}
+.thread-card-stats {
+  display: flex;
+  gap: 12px;
+  margin-top: 7px;
+}
+.thread-stat {
+  font-size: 11px;
+  color: var(--label-3);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.thread-stat-num { color: var(--label-2); font-weight: 600; }
+.thread-card-tags { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
+.thread-tag-badge {
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: var(--blue);
+  color: #fff;
+  font-weight: 500;
+}
+.thread-card-actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity .15s;
+}
+.thread-card:hover .thread-card-actions { opacity: 1; }
+.thread-action-btn {
+  width: 28px; height: 28px;
+  border: none;
+  background: var(--fill-3);
+  border-radius: 50%;
+  font-size: 13px;
+  color: var(--label-2);
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s;
+}
+.thread-action-btn:hover { background: var(--fill-2); color: var(--label); }
+.thread-action-btn.active { color: var(--blue); }
+
+/* Reply preview in thread card */
+.thread-reply-previews {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--separator);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.thread-reply-preview-item {
+  font-size: 12px;
+  color: var(--label-2);
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.thread-reply-preview-item img {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-xs);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* ── Chat View (iMessage) ── */
+#view-chat {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+#chat-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--bg);
+}
+#chat-scroll::-webkit-scrollbar { width: 6px; }
+#chat-scroll::-webkit-scrollbar-thumb { background: var(--fill); border-radius: 3px; }
+
+/* Message bubble */
+.msg {
+  display: flex;
+  flex-direction: column;
+  max-width: 72%;
+  gap: 2px;
+  animation: msgIn .2s ease;
+}
+@keyframes msgIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.msg.out { align-self: flex-end; align-items: flex-end; }
+.msg.in  { align-self: flex-start; align-items: flex-start; }
+.msg.in.op { max-width: 80%; }
+
+.msg-meta {
+  font-size: 11px;
+  color: var(--label-3);
+  padding: 0 6px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.msg-name { font-weight: 600; color: var(--label-2); }
+.msg-no { color: var(--label-3); }
+.op-badge {
+  background: var(--green);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 6px;
+  letter-spacing: 0.3px;
+}
+.msg-time { color: var(--label-3); }
+
+.msg-bubble {
+  border-radius: var(--r-lg);
+  padding: 9px 13px;
+  font-size: var(--fs-base);
+  line-height: 1.55;
+  word-break: break-word;
+  position: relative;
+  max-width: 100%;
+  cursor: default;
+}
+.msg.out .msg-bubble {
+  background: var(--bubble-out);
+  color: var(--bubble-out-t);
+  border-bottom-right-radius: 4px;
+}
+.msg.in .msg-bubble {
+  background: var(--bubble-in);
+  color: var(--bubble-in-t);
+  border-bottom-left-radius: 4px;
+}
+.msg.in.op .msg-bubble {
+  background: var(--bubble-op);
+  color: var(--bubble-op-t);
+  border-bottom-left-radius: 4px;
+}
+.msg-bubble p { margin: 2px 0; }
+.msg-bubble p:first-child { margin-top: 0; }
+.msg-bubble p:last-child { margin-bottom: 0; }
+
+/* Greentext */
+.gt {
+  color: var(--gt-color);
+  display: block;
+}
+.msg.out .gt { color: var(--gt-reply); }
+[data-italic-gt="true"] .gt { font-style: italic; }
+
+/* Reply quote link */
+.ql {
+  display: inline-block;
+  color: rgba(255,255,255,0.75);
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity .1s;
+}
+.ql:hover { opacity: .75; text-decoration: underline; }
+.msg.in .ql { color: var(--blue); }
+.msg.in.op .ql { color: var(--blue); }
+
+/* Quoted reply preview inside bubble */
+.reply-quote-box {
+  border-radius: var(--r-xs);
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  font-size: 12px;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  border-left: 3px solid rgba(255,255,255,.4);
+  background: rgba(255,255,255,.1);
+  color: rgba(255,255,255,.85);
+}
+.msg.in .reply-quote-box {
+  border-left-color: var(--blue);
+  background: var(--fill-3);
+  color: var(--label-2);
+}
+.reply-quote-box img { width: 36px; height: 36px; border-radius: 4px; object-fit: cover; flex-shrink: 0; }
+.reply-quote-text { font-size: 11px; }
+
+/* Message image */
+.msg-img {
+  max-width: 220px;
+  max-height: 220px;
+  border-radius: var(--r-md);
+  object-fit: cover;
+  cursor: zoom-in;
+  margin-top: 4px;
+  transition: transform .2s;
+}
+.msg-img:hover { transform: scale(1.02); }
+
+/* Date separator */
+.date-sep {
+  text-align: center;
+  font-size: 11px;
+  color: var(--label-3);
+  padding: 8px 0 4px;
+  font-weight: 500;
+}
+
+/* ── Overlays ── */
+/* Image Lightbox */
+#lightbox {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.85);
+  z-index: 9000;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(6px);
+}
+#lightbox.open { display: flex; }
+#lightbox img {
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-lg);
+  object-fit: contain;
+}
+#lightbox-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 38px; height: 38px;
+  background: rgba(255,255,255,.15);
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 20px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: background .15s;
+}
+#lightbox-close:hover { background: rgba(255,255,255,.25); }
+#lightbox-dl {
+  position: absolute;
+  bottom: 18px;
+  right: 18px;
+  background: rgba(255,255,255,.15);
+  border: none;
+  border-radius: var(--r-sm);
+  color: #fff;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-family: var(--sf);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background .15s;
+  display: flex; align-items: center; gap: 6px;
+}
+#lightbox-dl:hover { background: rgba(255,255,255,.25); }
+
+/* Hover zoom preview */
+#zoom-preview {
+  position: fixed;
+  display: none;
+  background: var(--bg-card);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  max-width: 480px;
+  max-height: 480px;
+  z-index: 8000;
+  pointer-events: none;
+  border: 1px solid var(--separator);
+}
+#zoom-preview img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+
+/* Reply hover popup */
+#reply-popup {
+  position: fixed;
+  display: none;
+  background: var(--bg-elevated);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-lg);
+  padding: 12px 14px;
+  max-width: 320px;
+  z-index: 8000;
+  pointer-events: none;
+  border: 1px solid var(--separator);
+  font-size: 13px;
+  line-height: 1.4;
+}
+#reply-popup .rp-name { font-weight: 600; font-size: 12px; margin-bottom: 4px; color: var(--label-2); }
+#reply-popup img { max-width: 80px; max-height: 80px; border-radius: var(--r-xs); margin-top: 6px; object-fit: cover; }
+
+/* ── Settings Sheet ── */
+#settings-backdrop {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.4);
+  z-index: 7000;
+  backdrop-filter: blur(4px);
+}
+#settings-backdrop.open { display: block; }
+#settings-panel {
+  position: fixed;
+  top: 0; right: -400px;
+  width: 380px;
+  max-width: 95vw;
+  height: 100vh;
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow-lg);
+  z-index: 7001;
+  display: flex;
+  flex-direction: column;
+  transition: right .3s cubic-bezier(.4,0,.2,1);
+  overflow: hidden;
+}
+#settings-panel.open { right: 0; }
+#settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--separator);
+  flex-shrink: 0;
+}
+#settings-header h2 { font-size: 18px; font-weight: 600; }
+#settings-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 0;
+}
+#settings-body::-webkit-scrollbar { width: 4px; }
+
+.settings-group {
+  margin-bottom: 6px;
+}
+.settings-group-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--label-2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0 20px 6px;
+}
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 20px;
+  border-bottom: 1px solid var(--separator);
+  gap: 12px;
+}
+.settings-row:last-child { border-bottom: none; }
+.settings-row-label { font-size: 15px; }
+.settings-row-desc { font-size: 12px; color: var(--label-2); margin-top: 1px; }
+.settings-row-control { flex-shrink: 0; }
+
+/* macOS toggle */
+.mac-toggle {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 51px;
+  height: 31px;
+  border-radius: 16px;
+  background: var(--fill);
+  cursor: pointer;
+  position: relative;
+  transition: background .2s;
+  outline: none;
+  flex-shrink: 0;
+}
+.mac-toggle::after {
+  content: '';
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 27px; height: 27px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,.3);
+  transition: transform .2s cubic-bezier(.4,0,.2,1);
+}
+.mac-toggle:checked { background: var(--green); }
+.mac-toggle:checked::after { transform: translateX(20px); }
+
+/* macOS-style slider */
+.mac-slider {
+  -webkit-appearance: none;
+  width: 120px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--fill);
+  outline: none;
+  cursor: pointer;
+}
+.mac-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,.3);
+  cursor: pointer;
+}
+
+/* Select in settings */
+.mac-select {
+  background: var(--fill-3);
+  border: none;
+  border-radius: var(--r-sm);
+  padding: 6px 10px;
+  font-size: 13px;
+  color: var(--label);
+  outline: none;
+  cursor: pointer;
+  min-width: 120px;
+}
+
+/* Tags list in settings */
+.tag-add-row {
+  display: flex;
+  gap: 8px;
+  padding: 0 20px 10px;
+}
+.tag-add-input {
+  flex: 1;
+  background: var(--fill-3);
+  border: none;
+  border-radius: var(--r-sm);
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--label);
+  outline: none;
+}
+.tag-add-btn {
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-sm);
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.tags-list { padding: 0 20px; display: flex; flex-wrap: wrap; gap: 6px; }
+.tag-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--fill-2);
+  border-radius: 10px;
+  padding: 4px 10px 4px 10px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.tag-chip-del {
+  background: none; border: none; color: var(--label-3); font-size: 14px; line-height: 1; cursor: pointer; padding: 0;
+}
+.tag-chip-del:hover { color: var(--red); }
+
+/* Filters section */
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  border-bottom: 1px solid var(--separator);
+}
+.filter-row:last-child { border-bottom: none; }
+.filter-row-text { flex: 1; font-size: 13px; }
+.filter-type-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: var(--fill-2);
+  color: var(--label-2);
+  text-transform: uppercase;
+}
+.filter-del-btn { background: none; border: none; color: var(--label-3); cursor: pointer; font-size: 16px; }
+.filter-del-btn:hover { color: var(--red); }
+
+.filter-add-form {
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.filter-add-form input, .filter-add-form select {
+  background: var(--fill-3);
+  border: none;
+  border-radius: var(--r-sm);
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--label);
+  outline: none;
+  width: 100%;
+}
+.filter-add-row-btns { display: flex; gap: 6px; align-items: center; }
+.filter-regex-label { font-size: 12px; color: var(--label-2); display: flex; align-items: center; gap: 4px; }
+
+/* ── Loading / Error ── */
+.loading-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  gap: 12px;
+  color: var(--label-2);
+}
+.spinner {
+  width: 28px; height: 28px;
+  border: 3px solid var(--fill);
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.error-msg {
+  text-align: center;
+  padding: 32px;
+  color: var(--label-2);
+  font-size: 14px;
+}
+.empty-msg {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--label-3);
+  font-size: 14px;
+}
+
+/* ── Topbar Back button breadcrumb ── */
+#breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 15px;
+  min-width: 0;
+  flex: 1;
+}
+.bc-sep { color: var(--label-3); font-size: 13px; }
+.bc-part { color: var(--label-2); font-size: 15px; font-weight: 500; cursor: pointer; white-space: nowrap; }
+.bc-part:hover { color: var(--blue); }
+.bc-part.current { color: var(--label); cursor: default; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── Responsive ── */
+@media (max-width: 680px) {
+  #sidebar { position: fixed; z-index: 100; height: 100vh; }
+  #sidebar:not(.mobile-open) { width: 0; min-width: 0; border-right: none; }
+  .boards-grid { grid-template-columns: 1fr 1fr; }
+  .msg { max-width: 88%; }
+}
+
+/* ── Filter highlight in threads ── */
+.thread-card.filtered { opacity: .35; pointer-events: none; }
+
+/* ── Proxy notice ── */
+#proxy-notice {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  z-index: 9500;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+}
+#proxy-notice.open { display: flex; }
+.proxy-card {
+  background: var(--bg-elevated);
+  border-radius: var(--r-xl);
+  padding: 28px 28px 24px;
+  max-width: 360px;
+  width: 90%;
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+}
+.proxy-card h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+.proxy-card p { font-size: 14px; color: var(--label-2); line-height: 1.5; margin-bottom: 20px; }
+.proxy-btn {
+  display: inline-block;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-md);
+  padding: 12px 28px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--sf);
+  transition: opacity .15s;
+  width: 100%;
+}
+.proxy-btn:hover { opacity: .88; }
+.proxy-skip {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--label-2);
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: var(--sf);
+  width: 100%;
+  padding: 6px;
+}
+.proxy-skip:hover { color: var(--label); }
+</style>
 </head>
-<body>
-    <!-- Navigation Drawer -->
-    <div id="nav-drawer" class="nav-drawer">
-        <div class="nav-header">
-            <h2>iChan</h2>
-            <button id="close-nav-btn" class="icon-btn">
-                <img src="assets/symbols/circle-xmark.svg" alt="Close" class="icon">
-            </button>
-        </div>
-        <div id="favorite-boards-nav" class="nav-section">
-            <h3>Favorite Boards</h3>
-            <div id="favorite-boards-nav-list"></div>
-        </div>
-        <div class="nav-section">
-            <h3>All Boards</h3>
-            <div id="boards-nav-list"></div>
-        </div>
+<body data-theme="light" data-italic-gt="false">
+
+<!-- Proxy Notice -->
+<div id="proxy-notice">
+  <div class="proxy-card">
+    <div style="font-size:36px;margin-bottom:12px">🌐</div>
+    <h2>CORS Access Needed</h2>
+    <p>iChan uses the <strong>codetabs</strong> CORS proxy to fetch 4chan data. This is free and reliable — no account needed.</p>
+    <button class="proxy-btn" id="proxy-open-btn">Open Proxy & Continue</button>
+    <button class="proxy-skip" id="proxy-skip-btn">Skip (may not work)</button>
+  </div>
+</div>
+
+<!-- Main Shell -->
+<div id="shell">
+
+  <!-- Sidebar -->
+  <aside id="sidebar">
+    <div id="sidebar-header">
+      <h1>iChan</h1>
+      <div class="sidebar-icon-row">
+        <button class="ib" id="settings-btn" title="Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+      </div>
+    </div>
+    <div id="board-search-wrap">
+      <input type="text" id="board-search" placeholder="Search boards…" autocomplete="off">
+    </div>
+    <div id="sidebar-tabs">
+      <button class="stab active" data-tab="boards">Boards</button>
+      <button class="stab" data-tab="favorites">★ Favs</button>
+      <button class="stab" data-tab="history">History</button>
+    </div>
+    <div id="sidebar-content"></div>
+  </aside>
+
+  <!-- Main Content -->
+  <main id="main">
+    <!-- Top Bar -->
+    <div id="topbar">
+      <button class="ib" id="toggle-sidebar-btn" title="Toggle sidebar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div id="breadcrumb">
+        <span class="bc-part current" id="bc-home" data-page="boards">iChan</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="ib" id="refresh-btn" title="Refresh" style="display:none">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        </button>
+        <button class="ib" id="dark-btn" title="Dark mode">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>
+        </button>
+        <button class="ib" id="open-settings-btn" title="Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+      </div>
     </div>
 
-    <!-- CORS Proxy Prompt -->
-    <div id="cors-proxy-prompt" class="dialog">
-        <div class="dialog-content">
-            <h2>Access Required</h2>
-            <p>This site uses a CORS proxy to fetch data. Please request access to continue.</p>
-            <button id="cors-proxy-btn" class="btn primary">Request Access</button>
+    <!-- View Area -->
+    <div id="view">
+      <!-- Boards page -->
+      <div id="view-boards" style="display:block">
+        <div class="boards-hero">
+          <div class="boards-hero-logo">iChan</div>
+          <div class="boards-hero-sub">A 4chan reader with iMessage vibes</div>
         </div>
+        <div class="boards-search-container">
+          <input type="text" class="boards-search" id="boards-main-search" placeholder="Search all boards…" autocomplete="off">
+        </div>
+        <div id="boards-main-content"></div>
+      </div>
+
+      <!-- Threads page -->
+      <div id="view-threads" style="display:none">
+        <div id="threads-filter-bar">
+          <input type="text" class="filter-input" id="thread-filter-input" placeholder="Filter threads…">
+          <select class="filter-select" id="thread-sort-select">
+            <option value="bump">Bump Order</option>
+            <option value="replies">Most Replies</option>
+            <option value="images">Most Images</option>
+            <option value="recent">Most Recent</option>
+          </select>
+          <select class="filter-select" id="media-filter-select">
+            <option value="all">All</option>
+            <option value="images">Has Images</option>
+            <option value="videos">Has Video</option>
+          </select>
+        </div>
+        <div id="threads-list"></div>
+      </div>
+
+      <!-- Chat page -->
+      <div id="view-chat" style="display:none">
+        <div id="chat-scroll"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox">
+  <button id="lightbox-close">✕</button>
+  <img id="lightbox-img" src="" alt="">
+  <a id="lightbox-dl" href="" download target="_blank">⬇ Download</a>
+</div>
+
+<!-- Zoom Preview -->
+<div id="zoom-preview"><img id="zoom-img" src="" alt=""></div>
+
+<!-- Reply Popup -->
+<div id="reply-popup"></div>
+
+<!-- Settings Panel -->
+<div id="settings-backdrop"></div>
+<div id="settings-panel">
+  <div id="settings-header">
+    <h2>Settings</h2>
+    <button class="ib" id="settings-close-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div id="settings-body">
+
+    <div class="settings-group">
+      <div class="settings-group-label">Appearance</div>
+      <div class="settings-row">
+        <div><div class="settings-row-label">Dark Mode</div></div>
+        <input type="checkbox" class="mac-toggle" id="s-darkmode">
+      </div>
+      <div class="settings-row">
+        <div><div class="settings-row-label">Font Size</div><div class="settings-row-desc"><span id="fs-val">15</span>px</div></div>
+        <input type="range" class="mac-slider" id="s-fontsize" min="12" max="20" step="1" value="15">
+      </div>
+      <div class="settings-row">
+        <div><div class="settings-row-label">High Contrast Text</div></div>
+        <input type="checkbox" class="mac-toggle" id="s-contrast">
+      </div>
     </div>
 
-    <!-- Main Content -->
-    <div id="main-content">
-        <!-- Boards Page -->
-        <div id="boards-page" class="page active">
-            <header class="header">
-                <button id="open-nav-btn" class="icon-btn">
-                    <img src="assets/symbols/left.svg" alt="Menu" class="icon">
-                </button>
-                <h1>Boards</h1>
-                <div class="header-actions">
-                    <button id="dark-mode-toggle-boards" class="icon-btn dark-mode-toggle">
-                        <img src="assets/symbols/moon-stars.svg" alt="Toggle Dark Mode" class="icon">
-                    </button>
-                    <button id="settings-toggle-boards" class="icon-btn settings-toggle">
-                        <img src="assets/symbols/settings.svg" alt="Settings" class="icon">
-                    </button>
-                </div>
-            </header>
-            <div class="search-container">
-                <input type="text" id="board-search" placeholder="Search boards..." aria-label="Search boards">
-                <div id="search-suggestions" class="suggestions"></div>
-            </div>
-            <div class="content">
-                <div id="favorite-boards" class="section">
-                    <h2>Favorite Boards</h2>
-                    <div id="favorite-boards-list" class="grid"></div>
-                </div>
-                <div id="all-boards" class="section">
-                    <h2>All Boards</h2>
-                    <div id="boards-list" class="grid"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Threads Page -->
-        <div id="threads-page" class="page">
-            <header class="header">
-                <button id="back-to-boards-btn" class="icon-btn">
-                    <img src="assets/symbols/left.svg" alt="Back" class="icon">
-                </button>
-                <h1 id="board-title"></h1>
-                <div class="header-actions">
-                    <button id="dark-mode-toggle-threads" class="icon-btn dark-mode-toggle">
-                        <img src="assets/symbols/moon-stars.svg" alt="Toggle Dark Mode" class="icon">
-                    </button>
-                    <button id="settings-toggle-threads" class="icon-btn settings-toggle">
-                        <img src="assets/symbols/settings.svg" alt="Settings" class="icon">
-                    </button>
-                </div>
-            </header>
-            <div class="filter-container">
-                <input type="text" id="thread-filter" placeholder="Filter threads..." aria-label="Filter threads">
-                <select id="thread-sort" aria-label="Sort threads">
-                    <option value="bump">Bump Order</option>
-                    <option value="replies">Most Replies</option>
-                    <option value="recent">Most Recent</option>
-                </select>
-                <select id="media-filter" aria-label="Filter media">
-                    <option value="all">All</option>
-                    <option value="images">Images</option>
-                    <option value="videos">Videos</option>
-                </select>
-            </div>
-            <div id="threads-list" class="content"></div>
-        </div>
-
-        <!-- Thread Detail Page -->
-        <div id="chat-page" class="page">
-            <header class="header">
-                <button id="back-to-threads-btn" class="icon-btn">
-                    <img src="assets/symbols/left.svg" alt="Back" class="icon">
-                </button>
-                <h1 id="thread-title"></h1>
-                <div class="header-actions">
-                    <button id="dark-mode-toggle-chat" class="icon-btn dark-mode-toggle">
-                        <img src="assets/symbols/moon-stars.svg" alt="Toggle Dark Mode" class="icon">
-                    </button>
-                    <button id="settings-toggle-chat" class="icon-btn settings-toggle">
-                        <img src="assets/symbols/settings.svg" alt="Settings" class="icon">
-                    </button>
-                </div>
-            </header>
-            <div id="chat-messages" class="content"></div>
-        </div>
+    <div class="settings-group">
+      <div class="settings-group-label">Reading</div>
+      <div class="settings-row">
+        <div><div class="settings-row-label">Greentext Italic</div><div class="settings-row-desc">Make &gt;quotes italic</div></div>
+        <input type="checkbox" class="mac-toggle" id="s-gtitalic">
+      </div>
+      <div class="settings-row">
+        <div><div class="settings-row-label">Image Hover Zoom</div></div>
+        <input type="checkbox" class="mac-toggle" id="s-hoverzoom">
+      </div>
+      <div class="settings-row">
+        <div><div class="settings-row-label">Auto-Refresh Threads</div><div class="settings-row-desc">Every 30 seconds</div></div>
+        <input type="checkbox" class="mac-toggle" id="s-autorefresh">
+      </div>
+      <div class="settings-row">
+        <div><div class="settings-row-label">Show Reply Previews</div><div class="settings-row-desc">In thread list cards</div></div>
+        <input type="checkbox" class="mac-toggle" id="s-replyprev">
+      </div>
     </div>
 
-    <!-- Image Modal -->
-    <div id="image-modal" class="dialog">
-        <div class="dialog-content image-modal-content">
-            <button id="close-image-modal" class="icon-btn dialog-close">
-                <img src="assets/symbols/circle-xmark.svg" alt="Close" class="icon">
-            </button>
-            <img id="modal-image" src="" alt="Enlarged Image">
-        </div>
+    <div class="settings-group">
+      <div class="settings-group-label">Thread Tags</div>
+      <div class="tag-add-row">
+        <input type="text" class="tag-add-input" id="s-newtag" placeholder="New tag name…">
+        <button class="tag-add-btn" id="s-addtag">Add</button>
+      </div>
+      <div class="tags-list" id="s-tags-list"></div>
     </div>
 
-    <!-- Zoom Image Preview -->
-    <div id="zoom-image-preview" class="zoom-preview"></div>
-
-    <!-- Reply Preview Popup -->
-    <div id="reply-preview-popup" class="reply-preview"></div>
-
-    <!-- Settings Dialog -->
-    <div id="settings-dialog" class="dialog">
-        <div class="dialog-content">
-            <div class="dialog-header">
-                <h2>Settings</h2>
-                <button id="settings-close" class="icon-btn dialog-close">
-                    <img src="assets/symbols/circle-xmark.svg" alt="Close" class="icon">
-                </button>
-            </div>
-            <div class="settings-content">
-                <div class="settings-item">
-                    <span>Dark Mode</span>
-                    <label class="switch">
-                        <input type="checkbox" id="dark-mode-toggle-settings">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <div class="settings-item">
-                    <span>Image Hover Zoom</span>
-                    <label class="switch">
-                        <input type="checkbox" id="hover-zoom-toggle" checked>
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <div class="settings-item">
-                    <span>High Contrast Text</span>
-                    <label class="switch">
-                        <input type="checkbox" id="high-contrast-toggle">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <div class="settings-item">
-                    <span>Auto-Refresh Threads</span>
-                    <label class="switch">
-                        <input type="checkbox" id="auto-refresh-toggle">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <div class="settings-section">
-                    <h3>Favorite Boards</h3>
-                    <div id="favorite-boards-selector" class="selector-list"></div>
-                </div>
-                <div class="settings-section">
-                    <h3>Thread Tags</h3>
-                    <input type="text" id="thread-tag-input" placeholder="Add new tag..." aria-label="Add thread tag">
-                    <div id="thread-tags-list" class="tag-list"></div>
-                </div>
-            </div>
+    <div class="settings-group" style="margin-top:12px">
+      <div class="settings-group-label">Filters</div>
+      <div class="filter-add-form">
+        <select id="f-type" style="width:100%">
+          <option value="name">Name</option>
+          <option value="trip">Tripcode</option>
+          <option value="subject">Subject</option>
+          <option value="comment">Comment</option>
+        </select>
+        <input type="text" id="f-pattern" placeholder="Pattern (text or /regex/)…">
+        <div class="filter-add-row-btns">
+          <label class="filter-regex-label"><input type="checkbox" id="f-regex"> Use Regex</label>
+          <button class="tag-add-btn" id="f-add-btn" style="margin-left:auto">Add Filter</button>
         </div>
+      </div>
+      <div id="s-filters-list"></div>
     </div>
 
-    <script defer src="script.js"></script>
+    <div class="settings-group" style="margin-top:12px">
+      <div class="settings-group-label">Favorite Boards</div>
+      <div id="s-favs-list" style="padding: 0 20px; font-size:13px; color:var(--label-2)">
+        Star boards in the sidebar to add them here.
+      </div>
+    </div>
+
+    <div class="settings-group" style="margin-top:12px">
+      <div class="settings-group-label">Data</div>
+      <div class="settings-row">
+        <div class="settings-row-label">Clear History</div>
+        <button class="tag-add-btn" id="s-clear-history" style="background:var(--red)">Clear</button>
+      </div>
+      <div class="settings-row">
+        <div class="settings-row-label">Reset All Settings</div>
+        <button class="tag-add-btn" id="s-reset" style="background:var(--fill-2);color:var(--label)">Reset</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════════════════
+const PROXY = 'https://api.codetabs.com/v1/proxy?quest=';
+const API   = 'https://a.4cdn.org';
+const CDN   = 'https://i.4cdn.org';
+
+// ════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════
+let cfg = {
+  darkMode: false,
+  hoverZoom: true,
+  autoRefresh: false,
+  fontSize: 15,
+  gtItalic: false,
+  highContrast: false,
+  showReplyPreviews: true,
+  favoriteBoards: [],
+  tags: [],
+  taggedThreads: {},   // "board:no" -> [tags]
+  pinnedThreads: [],   // "board:no"
+  filters: [],
+  corsOk: false,
+};
+
+let state = {
+  page: 'boards',   // boards | threads | chat
+  board: null,
+  boardTitle: '',
+  thread: null,
+  allBoards: [],
+  threadData: [],   // raw catalog
+  chatPosts: [],
+  postMap: new Map(),
+  threadCache: new Map(),
+  autoRefreshTimer: null,
+};
+
+let history = []; // [{board, boardTitle, threadNo, threadTitle, ts}]
+
+// ════════════════════════════════════════════════
+// PERSIST
+// ════════════════════════════════════════════════
+function loadCfg() {
+  try {
+    const s = localStorage.getItem('ichan_cfg');
+    if (s) cfg = { ...cfg, ...JSON.parse(s) };
+  } catch(e) {}
+  try {
+    const h = localStorage.getItem('ichan_history');
+    if (h) history = JSON.parse(h);
+  } catch(e) {}
+}
+function saveCfg() {
+  localStorage.setItem('ichan_cfg', JSON.stringify(cfg));
+}
+function saveHistory() {
+  localStorage.setItem('ichan_history', JSON.stringify(history.slice(0, 50)));
+}
+function pushHistory(entry) {
+  history = history.filter(h =>
+    !(h.board === entry.board && h.threadNo === entry.threadNo)
+  );
+  history.unshift(entry);
+  saveHistory();
+}
+
+// ════════════════════════════════════════════════
+// APPLY SETTINGS TO DOM
+// ════════════════════════════════════════════════
+function applyTheme() {
+  document.body.dataset.theme = cfg.darkMode ? 'dark' : 'light';
+  document.getElementById('s-darkmode').checked = cfg.darkMode;
+  // sync dark button icon
+  const db = document.getElementById('dark-btn');
+  if (cfg.darkMode) {
+    db.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
+  } else {
+    db.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>`;
+  }
+}
+function applyFontSize() {
+  document.documentElement.style.setProperty('--fs-base', cfg.fontSize + 'px');
+  document.getElementById('s-fontsize').value = cfg.fontSize;
+  document.getElementById('fs-val').textContent = cfg.fontSize;
+}
+function applyItalicGt() {
+  document.body.dataset.italicGt = cfg.gtItalic;
+  document.getElementById('s-gtitalic').checked = cfg.gtItalic;
+}
+function applyContrast() {
+  document.body.style.setProperty('--label-2', cfg.highContrast
+    ? (cfg.darkMode ? 'rgba(235,235,245,0.9)' : 'rgba(60,60,67,0.9)')
+    : '');
+  document.getElementById('s-contrast').checked = cfg.highContrast;
+}
+function applyAll() {
+  applyTheme();
+  applyFontSize();
+  applyItalicGt();
+  applyContrast();
+  document.getElementById('s-hoverzoom').checked = cfg.hoverZoom;
+  document.getElementById('s-autorefresh').checked = cfg.autoRefresh;
+  document.getElementById('s-replyprev').checked = cfg.showReplyPreviews;
+}
+
+// ════════════════════════════════════════════════
+// API
+// ════════════════════════════════════════════════
+async function apiFetch(url) {
+  const r = await fetch(PROXY + encodeURIComponent(url));
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.json();
+}
+
+// ════════════════════════════════════════════════
+// ROUTING / NAVIGATION
+// ════════════════════════════════════════════════
+function showPage(page) {
+  document.getElementById('view-boards').style.display  = page === 'boards'  ? 'block' : 'none';
+  document.getElementById('view-threads').style.display = page === 'threads' ? 'flex'  : 'none';
+  document.getElementById('view-chat').style.display    = page === 'chat'    ? 'flex'  : 'none';
+  document.getElementById('refresh-btn').style.display  = page !== 'boards'  ? 'flex'  : 'none';
+  state.page = page;
+  updateBreadcrumb();
+}
+
+function updateBreadcrumb() {
+  const bc = document.getElementById('breadcrumb');
+  if (state.page === 'boards') {
+    bc.innerHTML = `<span class="bc-part current" id="bc-home">iChan</span>`;
+  } else if (state.page === 'threads') {
+    bc.innerHTML = `
+      <span class="bc-part" id="bc-home" onclick="navBoards()">iChan</span>
+      <span class="bc-sep">›</span>
+      <span class="bc-part current">/${state.board}/ — ${state.boardTitle}</span>`;
+  } else if (state.page === 'chat') {
+    bc.innerHTML = `
+      <span class="bc-part" id="bc-home" onclick="navBoards()">iChan</span>
+      <span class="bc-sep">›</span>
+      <span class="bc-part" onclick="navThreads()">/${state.board}/</span>
+      <span class="bc-sep">›</span>
+      <span class="bc-part current" style="max-width:260px">${esc(state.thread?.sub || 'Thread #' + state.thread?.no)}</span>`;
+  }
+}
+
+function navBoards() {
+  stopAutoRefresh();
+  showPage('boards');
+}
+function navThreads() {
+  stopAutoRefresh();
+  showPage('threads');
+  if (cfg.autoRefresh) startAutoRefresh();
+}
+
+// ════════════════════════════════════════════════
+// BOARDS
+// ════════════════════════════════════════════════
+async function loadBoards() {
+  try {
+    const d = await apiFetch(API + '/boards.json');
+    state.allBoards = d.boards || [];
+    renderSidebar();
+    renderBoardsMain(state.allBoards);
+  } catch(e) {
+    document.getElementById('boards-main-content').innerHTML =
+      `<div class="error-msg">Could not load boards. Check your CORS proxy.<br><small>${e.message}</small></div>`;
+  }
+}
+
+function renderBoardsMain(boards) {
+  const favs = boards.filter(b => cfg.favoriteBoards.includes(b.board));
+  let html = '';
+  if (favs.length) {
+    html += `<div class="boards-section-title">⭐ Favorites</div>
+             <div class="boards-grid">` +
+      favs.map(b => boardCard(b)).join('') +
+      `</div>`;
+  }
+  html += `<div class="boards-section-title">All Boards</div>
+           <div class="boards-grid">` +
+    boards.map(b => boardCard(b)).join('') +
+    `</div>`;
+  document.getElementById('boards-main-content').innerHTML = html;
+  document.querySelectorAll('.board-card').forEach(el => {
+    el.addEventListener('click', () => {
+      const code  = el.dataset.code;
+      const board = state.allBoards.find(b => b.board === code);
+      if (board) openBoard(board);
+    });
+  });
+}
+
+function boardCard(b) {
+  return `<div class="board-card" data-code="${b.board}">
+    <div class="board-card-code">/${b.board}/</div>
+    <div class="board-card-title">${esc(b.title)}</div>
+    <div class="board-card-desc">${esc(b.meta_description || '')}</div>
+  </div>`;
+}
+
+// ════════════════════════════════════════════════
+// SIDEBAR
+// ════════════════════════════════════════════════
+let sidebarTab = 'boards';
+function renderSidebar(filter) {
+  const boards = filter
+    ? state.allBoards.filter(b =>
+        b.board.includes(filter.toLowerCase()) ||
+        b.title.toLowerCase().includes(filter.toLowerCase()))
+    : state.allBoards;
+
+  const el = document.getElementById('sidebar-content');
+  if (sidebarTab === 'boards') {
+    el.innerHTML = boards.map(b => boardRow(b)).join('');
+  } else if (sidebarTab === 'favorites') {
+    const favs = boards.filter(b => cfg.favoriteBoards.includes(b.board));
+    el.innerHTML = favs.length
+      ? favs.map(b => boardRow(b)).join('')
+      : `<div class="empty-msg" style="font-size:12px;padding:20px">No favorites yet. Star boards to add them.</div>`;
+  } else {
+    renderHistorySidebar();
+    return;
+  }
+  el.querySelectorAll('.board-row').forEach(row => {
+    row.addEventListener('click', (e) => {
+      if (e.target.closest('.board-fav-btn')) return;
+      const code = row.dataset.code;
+      const board = state.allBoards.find(b => b.board === code);
+      if (board) { openBoard(board); closeMobileSidebar(); }
+    });
+    row.querySelector('.board-fav-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const code = row.dataset.code;
+      toggleFav(code);
+    });
+  });
+}
+function boardRow(b) {
+  const isFav = cfg.favoriteBoards.includes(b.board);
+  return `<div class="board-row ${state.board === b.board ? 'active' : ''}" data-code="${b.board}">
+    <div class="board-row-icon" style="background:${boardColor(b.board)}">${b.board.slice(0,2).toUpperCase()}</div>
+    <div class="board-row-text">
+      <div class="board-row-title">/${b.board}/ — ${esc(b.title)}</div>
+    </div>
+    <button class="board-fav-btn ${isFav?'faved':''}" title="${isFav?'Unfavorite':'Favorite'}">${isFav?'★':'☆'}</button>
+  </div>`;
+}
+function boardColor(code) {
+  const colors = ['#007AFF','#34C759','#FF9500','#FF2D55','#AF52DE','#5AC8FA','#FF3B30','#4CD964'];
+  let h = 0;
+  for (let i=0;i<code.length;i++) h = ((h<<5)-h)+code.charCodeAt(i);
+  return colors[Math.abs(h) % colors.length];
+}
+function renderHistorySidebar() {
+  const el = document.getElementById('sidebar-content');
+  if (!history.length) {
+    el.innerHTML = `<div class="empty-msg" style="font-size:12px;padding:20px">No history yet.</div>`;
+    return;
+  }
+  el.innerHTML = history.map((h,i) => `
+    <div class="history-row" data-idx="${i}">
+      <div class="history-row-icon" style="background:${boardColor(h.board)}">${h.board.slice(0,2).toUpperCase()}</div>
+      <div class="history-row-text">
+        <div class="history-row-board">/${h.board}/</div>
+        <div class="history-row-title">${esc(h.threadTitle || 'Thread #'+h.threadNo)}</div>
+      </div>
+      <button class="history-row-del" data-idx="${i}">✕</button>
+    </div>`).join('');
+  el.querySelectorAll('.history-row').forEach(row => {
+    row.addEventListener('click', (e) => {
+      if (e.target.closest('.history-row-del')) return;
+      const idx = +row.dataset.idx;
+      const h = history[idx];
+      const board = state.allBoards.find(b => b.board === h.board);
+      if (board) {
+        openBoard(board, false);
+        openThread({no: h.threadNo, sub: h.threadTitle}, false);
+      }
+    });
+    row.querySelector('.history-row-del').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const idx = +e.target.dataset.idx;
+      history.splice(idx, 1);
+      saveHistory();
+      renderHistorySidebar();
+    });
+  });
+}
+function toggleFav(code) {
+  if (cfg.favoriteBoards.includes(code)) {
+    cfg.favoriteBoards = cfg.favoriteBoards.filter(c => c !== code);
+  } else {
+    cfg.favoriteBoards.push(code);
+  }
+  saveCfg();
+  renderSidebar();
+  renderSettingsFavs();
+}
+function closeMobileSidebar() {
+  if (window.innerWidth <= 680) {
+    document.getElementById('sidebar').classList.remove('mobile-open');
+  }
+}
+
+// ════════════════════════════════════════════════
+// THREADS
+// ════════════════════════════════════════════════
+async function openBoard(board, navigate = true) {
+  state.board = board.board;
+  state.boardTitle = board.title;
+  if (navigate) showPage('threads');
+  renderSidebar();
+  document.getElementById('threads-list').innerHTML = `<div class="loading-wrap"><div class="spinner"></div><span>Loading threads…</span></div>`;
+  try {
+    const d = await apiFetch(API + `/${board.board}/catalog.json`);
+    state.threadData = d;
+    filterAndRenderThreads();
+    if (cfg.autoRefresh) startAutoRefresh();
+  } catch(e) {
+    document.getElementById('threads-list').innerHTML = `<div class="error-msg">Could not load threads.<br><small>${e.message}</small></div>`;
+  }
+}
+
+function filterAndRenderThreads() {
+  const filterQ = document.getElementById('thread-filter-input').value.toLowerCase();
+  const sort    = document.getElementById('thread-sort-select').value;
+  const media   = document.getElementById('media-filter-select').value;
+
+  let threads = state.threadData.flatMap(p => p.threads || []);
+
+  if (filterQ) {
+    threads = threads.filter(t =>
+      (t.sub || '').toLowerCase().includes(filterQ) ||
+      (t.com ? strip(t.com) : '').toLowerCase().includes(filterQ)
+    );
+  }
+  if (media === 'images') threads = threads.filter(t => t.tim && /\.(jpg|png|gif|webp)/i.test(t.ext||''));
+  if (media === 'videos') threads = threads.filter(t => t.tim && /\.(webm|mp4)/i.test(t.ext||''));
+
+  // Active filters
+  if (cfg.filters.length) {
+    threads = threads.map(t => ({ ...t, _filtered: cfg.filters.filter(f=>f.enabled).some(f => matchFilter(t, f)) }));
+  }
+
+  if (sort === 'replies') threads.sort((a,b) => (b.replies||0)-(a.replies||0));
+  else if (sort === 'images')  threads.sort((a,b) => (b.images||0)-(a.images||0));
+  else if (sort === 'recent')  threads.sort((a,b) => (b.last_modified||0)-(a.last_modified||0));
+
+  // Pinned to top
+  threads.sort((a,b) => {
+    const ap = cfg.pinnedThreads.includes(`${state.board}:${a.no}`) ? -1 : 0;
+    const bp = cfg.pinnedThreads.includes(`${state.board}:${b.no}`) ? -1 : 0;
+    return ap - bp;
+  });
+
+  renderThreads(threads);
+}
+
+function renderThreads(threads) {
+  const el = document.getElementById('threads-list');
+  if (!threads.length) { el.innerHTML = '<div class="empty-msg">No threads found.</div>'; return; }
+  el.innerHTML = '';
+  threads.forEach(t => {
+    const tid = `${state.board}:${t.no}`;
+    const isPinned = cfg.pinnedThreads.includes(tid);
+    const tags = cfg.taggedThreads[tid] || [];
+    const card = document.createElement('div');
+    card.className = 'thread-card' + (isPinned ? ' pinned' : '') + (t._filtered ? ' filtered' : '');
+    card.dataset.no = t.no;
+
+    const imgHtml = t.tim
+      ? `<div class="thread-card-thumb"><img data-src="${CDN}/${state.board}/${t.tim}s.jpg" src="" alt="" loading="lazy" onerror="this.style.display='none'"></div>`
+      : '';
+
+    const preview = t.com ? strip(t.com).substring(0, 140) + (strip(t.com).length > 140 ? '…' : '') : 'No preview';
+    const tagsHtml = tags.length
+      ? `<div class="thread-card-tags">${tags.map(tg=>`<span class="thread-tag-badge">${esc(tg)}</span>`).join('')}</div>`
+      : '';
+
+    card.innerHTML = `
+      <div class="thread-card-actions">
+        <button class="thread-action-btn pin-btn ${isPinned?'active':''}" title="${isPinned?'Unpin':'Pin'}" data-no="${t.no}">📌</button>
+        <button class="thread-action-btn tag-btn" title="Tag thread" data-no="${t.no}">🏷</button>
+      </div>
+      <div class="thread-card-inner">
+        ${imgHtml}
+        <div class="thread-card-body">
+          <div class="thread-card-subject">${esc(t.sub || 'Thread #' + t.no)}</div>
+          <div class="thread-card-meta">${esc(t.name || 'Anonymous')} · #${t.no} · ${fmtTime(t.time)}</div>
+          <div class="thread-card-preview">${esc(preview)}</div>
+          <div class="thread-card-stats">
+            <span class="thread-stat">💬 <span class="thread-stat-num">${t.replies||0}</span></span>
+            <span class="thread-stat">🖼 <span class="thread-stat-num">${t.images||0}</span></span>
+          </div>
+          ${tagsHtml}
+        </div>
+      </div>
+      ${cfg.showReplyPreviews && t.last_replies && t.last_replies.length ? renderReplyPreviews(t) : ''}
+    `;
+
+    // Lazy-load images via IntersectionObserver
+    const imgs = card.querySelectorAll('img[data-src]');
+    imgs.forEach(img => lazyObserver.observe(img));
+
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.thread-card-actions')) return;
+      openThread(t);
+    });
+    card.querySelector('.pin-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      togglePin(state.board, t.no);
+    });
+    card.querySelector('.tag-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      showTagPicker(state.board, t.no, tags);
+    });
+
+    el.appendChild(card);
+  });
+}
+
+function renderReplyPreviews(t) {
+  const replies = (t.last_replies || []).slice(-2);
+  if (!replies.length) return '';
+  return `<div class="thread-reply-previews">` +
+    replies.map(r => `
+      <div class="thread-reply-preview-item">
+        ${r.tim ? `<img data-src="${CDN}/${state.board}/${r.tim}s.jpg" src="" alt="" onerror="this.style.display='none'">` : ''}
+        <span><strong>${esc(r.name||'Anon')}</strong> · ${strip(r.com||'').substring(0,60)}</span>
+      </div>`) .join('') +
+  `</div>`;
+}
+
+function togglePin(board, no) {
+  const id = `${board}:${no}`;
+  if (cfg.pinnedThreads.includes(id)) {
+    cfg.pinnedThreads = cfg.pinnedThreads.filter(x => x !== id);
+  } else {
+    cfg.pinnedThreads.push(id);
+  }
+  saveCfg();
+  filterAndRenderThreads();
+}
+
+function showTagPicker(board, no, current) {
+  if (!cfg.tags.length) { alert('Add tags in Settings first.'); return; }
+  const tag = prompt('Available tags: ' + cfg.tags.join(', ') + '\nType tag to toggle:', current[0]||'');
+  if (tag && cfg.tags.includes(tag.trim())) {
+    const id = `${board}:${no}`;
+    const existing = cfg.taggedThreads[id] || [];
+    if (existing.includes(tag.trim())) {
+      cfg.taggedThreads[id] = existing.filter(t => t !== tag.trim());
+    } else {
+      cfg.taggedThreads[id] = [...existing, tag.trim()];
+    }
+    if (!cfg.taggedThreads[id].length) delete cfg.taggedThreads[id];
+    saveCfg();
+    filterAndRenderThreads();
+  } else if (tag) {
+    alert('Tag not found. Add it in Settings first.');
+  }
+}
+
+// ════════════════════════════════════════════════
+// THREAD (CHAT VIEW)
+// ════════════════════════════════════════════════
+async function openThread(thread, navigate = true) {
+  state.thread = thread;
+  if (navigate) {
+    showPage('chat');
+    pushHistory({
+      board: state.board,
+      boardTitle: state.boardTitle,
+      threadNo: thread.no,
+      threadTitle: thread.sub || ('Thread #' + thread.no),
+      ts: Date.now(),
+    });
+  }
+  const scroll = document.getElementById('chat-scroll');
+  scroll.innerHTML = `<div class="loading-wrap"><div class="spinner"></div><span>Loading posts…</span></div>`;
+  try {
+    const d = await apiFetch(API + `/${state.board}/thread/${thread.no}.json`);
+    state.chatPosts = d.posts || [];
+    state.postMap = new Map(state.chatPosts.map(p => [p.no, p]));
+    renderChat();
+    if (navigate && cfg.autoRefresh) startAutoRefreshThread();
+  } catch(e) {
+    scroll.innerHTML = `<div class="error-msg">Could not load thread.<br><small>${e.message}</small></div>`;
+  }
+}
+
+function renderChat() {
+  const scroll = document.getElementById('chat-scroll');
+  scroll.innerHTML = '';
+
+  const opNo = state.chatPosts[0]?.no;
+  let lastDate = null;
+
+  state.chatPosts.forEach(post => {
+    // Date separator
+    const d = new Date(post.time * 1000);
+    const dateStr = d.toLocaleDateString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+    if (dateStr !== lastDate) {
+      const sep = document.createElement('div');
+      sep.className = 'date-sep';
+      sep.textContent = dateStr;
+      scroll.appendChild(sep);
+      lastDate = dateStr;
+    }
+
+    const isOp = post.no === opNo;
+    const isReply = !isOp && (post.com || '').includes('>>');
+    const isOut = isReply;
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'msg ' + (isOp ? 'in op' : (isOut ? 'out' : 'in'));
+    wrapper.id = `post-${post.no}`;
+
+    // Meta row
+    const meta = document.createElement('div');
+    meta.className = 'msg-meta';
+    meta.innerHTML = `
+      <span class="msg-name">${esc(post.name||'Anonymous')}</span>
+      <span class="msg-no">#${post.no}</span>
+      ${isOp ? '<span class="op-badge">OP</span>' : ''}
+      <span class="msg-time">${fmtTimeFull(post.time)}</span>`;
+
+    // Bubble
+    const bubble = document.createElement('div');
+    bubble.className = 'msg-bubble';
+
+    // Quote preview
+    if (post.com) {
+      const qm = post.com.match(/>>(\d+)/);
+      if (qm) {
+        const refNo = parseInt(qm[1]);
+        const ref = state.postMap.get(refNo);
+        if (ref) {
+          const qbox = document.createElement('div');
+          qbox.className = 'reply-quote-box';
+          if (ref.tim) {
+            qbox.innerHTML += `<img src="${CDN}/${state.board}/${ref.tim}s.jpg" onerror="this.style.display='none'">`;
+          }
+          const qt = document.createElement('div');
+          qt.className = 'reply-quote-text';
+          qt.textContent = strip(ref.com||'').substring(0,80) + '…';
+          qbox.appendChild(qt);
+          bubble.appendChild(qbox);
+        }
+      }
+    }
+
+    // Comment
+    if (post.com) {
+      const commentDiv = document.createElement('div');
+      commentDiv.innerHTML = formatComment(post.com, isOut);
+      bubble.appendChild(commentDiv);
+    } else if (!post.tim) {
+      bubble.textContent = '(no text)';
+    }
+
+    // Image
+    if (post.tim) {
+      const img = document.createElement('img');
+      img.className = 'msg-img';
+      img.dataset.src = `${CDN}/${state.board}/${post.tim}s.jpg`;
+      img.dataset.full = `${CDN}/${state.board}/${post.tim}${post.ext}`;
+      img.src = '';
+      img.alt = '';
+      img.onerror = function(){ this.style.display='none'; };
+      img.addEventListener('click', () => openLightbox(img.dataset.full));
+      if (cfg.hoverZoom) {
+        img.addEventListener('mouseenter', (e) => showZoom(img.dataset.full, e));
+        img.addEventListener('mouseleave', hideZoom);
+        img.addEventListener('mousemove', moveZoom);
+      }
+      lazyObserver.observe(img);
+      bubble.appendChild(img);
+    }
+
+    wrapper.appendChild(meta);
+    wrapper.appendChild(bubble);
+    scroll.appendChild(wrapper);
+
+    // Wire up reply links
+    bubble.querySelectorAll('.ql').forEach(ql => {
+      const no = parseInt(ql.dataset.no);
+      ql.addEventListener('mouseenter', (e) => showReplyPopup(no, e));
+      ql.addEventListener('mouseleave', hideReplyPopup);
+      ql.addEventListener('click', () => scrollToPost(no));
+    });
+  });
+
+  // Don't auto-scroll — keep at top like original iChan
+  scroll.scrollTop = 0;
+}
+
+// ════════════════════════════════════════════════
+// TEXT FORMATTING
+// ════════════════════════════════════════════════
+function formatComment(html, isOut) {
+  // Decode HTML entities
+  let t = html
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<wbr>/gi, '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&gt;/g, '>')
+    .replace(/&lt;/g, '<')
+    .replace(/&quot;/g, '"')
+    .replace(/&#039;/g, "'")
+    .replace(/&amp;/g, '&')
+    .replace(/&#44;/g, ',')
+    .trim();
+
+  return t.split('\n').map(line => {
+    line = line.trim();
+    if (!line) return '';
+    if (line.match(/^>>(\d+)/)) {
+      return line.replace(/>>(\d+)/g, (_, n) =>
+        `<a class="ql" data-no="${n}">&gt;&gt;${n}</a>`);
+    }
+    if (line.startsWith('>')) {
+      return `<span class="gt">${esc(line)}</span>`;
+    }
+    return `<p>${escReplyLinks(esc(line))}</p>`;
+  }).filter(Boolean).join('');
+}
+
+function escReplyLinks(s) {
+  return s.replace(/&gt;&gt;(\d+)/g, (_, n) => `<a class="ql" data-no="${n}">&gt;&gt;${n}</a>`);
+}
+
+function strip(h) {
+  const d = document.createElement('div');
+  d.innerHTML = h;
+  return (d.textContent || '').trim();
+}
+function esc(t) {
+  if (!t) return '';
+  const d = document.createElement('div');
+  d.textContent = t;
+  return d.innerHTML;
+}
+
+// ════════════════════════════════════════════════
+// FILTERS
+// ════════════════════════════════════════════════
+function matchFilter(post, f) {
+  if (!f.enabled) return false;
+  let text = '';
+  if (f.type === 'name')    text = post.name || '';
+  if (f.type === 'trip')    text = post.trip || '';
+  if (f.type === 'subject') text = post.sub  || '';
+  if (f.type === 'comment') text = strip(post.com || '');
+  if (f.isRegex) {
+    try { return new RegExp(f.pattern, 'i').test(text); } catch { return false; }
+  }
+  return text.toLowerCase().includes(f.pattern.toLowerCase());
+}
+
+// ════════════════════════════════════════════════
+// LIGHTBOX
+// ════════════════════════════════════════════════
+function openLightbox(src) {
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox-dl').href = src;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.getElementById('lightbox-img').src = '';
+}
+
+// ════════════════════════════════════════════════
+// HOVER ZOOM
+// ════════════════════════════════════════════════
+function showZoom(src, e) {
+  if (!cfg.hoverZoom) return;
+  const zp = document.getElementById('zoom-preview');
+  document.getElementById('zoom-img').src = src;
+  zp.style.display = 'block';
+  moveZoom(e);
+}
+function hideZoom() {
+  document.getElementById('zoom-preview').style.display = 'none';
+}
+function moveZoom(e) {
+  const zp = document.getElementById('zoom-preview');
+  let x = e.clientX + 24, y = e.clientY + 24;
+  if (x + 490 > window.innerWidth) x = e.clientX - 490;
+  if (y + 490 > window.innerHeight) y = e.clientY - 490;
+  zp.style.left = Math.max(0,x) + 'px';
+  zp.style.top  = Math.max(0,y) + 'px';
+}
+
+// ════════════════════════════════════════════════
+// REPLY POPUP
+// ════════════════════════════════════════════════
+function showReplyPopup(no, e) {
+  const post = state.postMap.get(no);
+  if (!post) return;
+  const pp = document.getElementById('reply-popup');
+  const name = esc(post.name || 'Anonymous');
+  const time = fmtTimeFull(post.time);
+  const text = strip(post.com||'').substring(0, 160);
+  const imgHtml = post.tim
+    ? `<img src="${CDN}/${state.board}/${post.tim}s.jpg" onerror="this.style.display='none'">`
+    : '';
+  pp.innerHTML = `<div class="rp-name">${name} #${post.no} · ${time}</div>${imgHtml}<div>${esc(text)}</div>`;
+  pp.style.display = 'block';
+  let x = e.clientX + 14, y = e.clientY + 14;
+  const w = pp.offsetWidth || 320, h = pp.offsetHeight || 100;
+  if (x + w > window.innerWidth - 10) x = e.clientX - w - 14;
+  if (y + h > window.innerHeight - 10) y = e.clientY - h - 14;
+  pp.style.left = Math.max(0,x) + 'px';
+  pp.style.top  = Math.max(0,y) + 'px';
+}
+function hideReplyPopup() {
+  document.getElementById('reply-popup').style.display = 'none';
+}
+
+function scrollToPost(no) {
+  const el = document.getElementById(`post-${no}`);
+  if (!el) return;
+  el.scrollIntoView({behavior:'smooth', block:'center'});
+  const bub = el.querySelector('.msg-bubble');
+  if (bub) {
+    bub.style.transition = 'box-shadow .2s';
+    bub.style.boxShadow = '0 0 0 3px rgba(0,122,255,.5)';
+    setTimeout(() => { bub.style.boxShadow = ''; }, 900);
+  }
+}
+
+// ════════════════════════════════════════════════
+// TIME FORMATTING
+// ════════════════════════════════════════════════
+function fmtTime(unix) {
+  const d = new Date(unix * 1000);
+  return d.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+}
+function fmtTimeFull(unix) {
+  const d = new Date(unix * 1000);
+  return d.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', hour12:false}) +
+    ' · ' + d.toLocaleDateString('en-US', {month:'short', day:'numeric'});
+}
+
+// ════════════════════════════════════════════════
+// AUTO REFRESH
+// ════════════════════════════════════════════════
+function startAutoRefresh() {
+  stopAutoRefresh();
+  if (!state.board) return;
+  state.autoRefreshTimer = setInterval(() => {
+    if (state.page === 'threads') openBoard({board: state.board, title: state.boardTitle}, false);
+    else if (state.page === 'chat' && state.thread) openThread(state.thread, false);
+  }, 30000);
+}
+function startAutoRefreshThread() {
+  stopAutoRefresh();
+  state.autoRefreshTimer = setInterval(() => {
+    if (state.page === 'chat' && state.thread) openThread(state.thread, false);
+  }, 30000);
+}
+function stopAutoRefresh() {
+  if (state.autoRefreshTimer) { clearInterval(state.autoRefreshTimer); state.autoRefreshTimer = null; }
+}
+
+// ════════════════════════════════════════════════
+// LAZY IMAGE LOADING
+// ════════════════════════════════════════════════
+const lazyObserver = new IntersectionObserver(entries => {
+  entries.forEach(en => {
+    if (en.isIntersecting) {
+      const img = en.target;
+      if (img.dataset.src) { img.src = img.dataset.src; img.removeAttribute('data-src'); }
+      lazyObserver.unobserve(img);
+    }
+  });
+}, { rootMargin: '200px' });
+
+// ════════════════════════════════════════════════
+// SETTINGS PANEL
+// ════════════════════════════════════════════════
+function openSettings() {
+  renderSettingsTags();
+  renderSettingsFilters();
+  renderSettingsFavs();
+  applyAll();
+  document.getElementById('settings-panel').classList.add('open');
+  document.getElementById('settings-backdrop').classList.add('open');
+}
+function closeSettings() {
+  document.getElementById('settings-panel').classList.remove('open');
+  document.getElementById('settings-backdrop').classList.remove('open');
+}
+
+function renderSettingsTags() {
+  const el = document.getElementById('s-tags-list');
+  if (!cfg.tags.length) { el.innerHTML = `<span style="font-size:12px;color:var(--label-3)">No tags yet.</span>`; return; }
+  el.innerHTML = cfg.tags.map((t,i) => `
+    <div class="tag-chip">
+      ${esc(t)}
+      <button class="tag-chip-del" data-i="${i}">×</button>
+    </div>`).join('');
+  el.querySelectorAll('.tag-chip-del').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const i = +btn.dataset.i;
+      cfg.tags.splice(i, 1);
+      saveCfg();
+      renderSettingsTags();
+    });
+  });
+}
+function renderSettingsFilters() {
+  const el = document.getElementById('s-filters-list');
+  if (!cfg.filters.length) { el.innerHTML = `<div style="padding:8px 20px;font-size:12px;color:var(--label-3)">No filters yet.</div>`; return; }
+  el.innerHTML = cfg.filters.map((f,i) => `
+    <div class="filter-row">
+      <input type="checkbox" ${f.enabled?'checked':''} data-fi="${i}" class="f-toggle">
+      <div class="filter-row-text">
+        <span class="filter-type-badge">${f.type}</span>
+        ${esc(f.pattern)} ${f.isRegex?'<span style="font-size:10px;color:var(--label-3)">(regex)</span>':''}
+      </div>
+      <button class="filter-del-btn" data-fi="${i}">✕</button>
+    </div>`).join('');
+  el.querySelectorAll('.f-toggle').forEach(cb => {
+    cb.addEventListener('change', () => {
+      cfg.filters[+cb.dataset.fi].enabled = cb.checked;
+      saveCfg();
+    });
+  });
+  el.querySelectorAll('.filter-del-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      cfg.filters.splice(+btn.dataset.fi, 1);
+      saveCfg();
+      renderSettingsFilters();
+    });
+  });
+}
+function renderSettingsFavs() {
+  const el = document.getElementById('s-favs-list');
+  if (!cfg.favoriteBoards.length) {
+    el.innerHTML = `<span style="font-size:12px;color:var(--label-3)">Star boards in the sidebar.</span>`;
+    return;
+  }
+  el.innerHTML = cfg.favoriteBoards.map(code => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--separator)">
+      <span>/${code}/</span>
+      <button class="tag-chip-del" data-code="${code}" style="font-size:16px">×</button>
+    </div>`).join('');
+  el.querySelectorAll('.tag-chip-del').forEach(btn => {
+    btn.addEventListener('click', () => {
+      toggleFav(btn.dataset.code);
+      renderSettingsFavs();
+    });
+  });
+}
+
+// ════════════════════════════════════════════════
+// CORS PROXY NOTICE
+// ════════════════════════════════════════════════
+function checkProxy() {
+  if (!cfg.corsOk) {
+    document.getElementById('proxy-notice').classList.add('open');
+  }
+}
+
+// ════════════════════════════════════════════════
+// EVENT WIRING
+// ════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  loadCfg();
+  applyAll();
+  checkProxy();
+
+  // Proxy notice
+  document.getElementById('proxy-open-btn').addEventListener('click', () => {
+    window.open('https://api.codetabs.com/', '_blank');
+    cfg.corsOk = true; saveCfg();
+    document.getElementById('proxy-notice').classList.remove('open');
+    loadBoards();
+  });
+  document.getElementById('proxy-skip-btn').addEventListener('click', () => {
+    cfg.corsOk = true; saveCfg();
+    document.getElementById('proxy-notice').classList.remove('open');
+    loadBoards();
+  });
+
+  // Sidebar toggle
+  document.getElementById('toggle-sidebar-btn').addEventListener('click', () => {
+    const sb = document.getElementById('sidebar');
+    if (window.innerWidth <= 680) {
+      sb.classList.toggle('mobile-open');
+    } else {
+      sb.classList.toggle('collapsed');
+    }
+  });
+
+  // Settings
+  [document.getElementById('settings-btn'), document.getElementById('open-settings-btn')].forEach(b => {
+    b?.addEventListener('click', openSettings);
+  });
+  document.getElementById('settings-close-btn').addEventListener('click', closeSettings);
+  document.getElementById('settings-backdrop').addEventListener('click', closeSettings);
+
+  // Dark mode
+  document.getElementById('dark-btn').addEventListener('click', () => {
+    cfg.darkMode = !cfg.darkMode;
+    saveCfg(); applyTheme();
+  });
+  document.getElementById('s-darkmode').addEventListener('change', (e) => {
+    cfg.darkMode = e.target.checked;
+    saveCfg(); applyTheme();
+  });
+
+  // Font size
+  document.getElementById('s-fontsize').addEventListener('input', (e) => {
+    cfg.fontSize = +e.target.value;
+    document.getElementById('fs-val').textContent = cfg.fontSize;
+    applyFontSize(); saveCfg();
+  });
+
+  // Toggles
+  document.getElementById('s-gtitalic').addEventListener('change', (e) => {
+    cfg.gtItalic = e.target.checked; applyItalicGt(); saveCfg();
+  });
+  document.getElementById('s-contrast').addEventListener('change', (e) => {
+    cfg.highContrast = e.target.checked; applyContrast(); saveCfg();
+  });
+  document.getElementById('s-hoverzoom').addEventListener('change', (e) => {
+    cfg.hoverZoom = e.target.checked; saveCfg();
+  });
+  document.getElementById('s-autorefresh').addEventListener('change', (e) => {
+    cfg.autoRefresh = e.target.checked; saveCfg();
+    if (cfg.autoRefresh) startAutoRefresh(); else stopAutoRefresh();
+  });
+  document.getElementById('s-replyprev').addEventListener('change', (e) => {
+    cfg.showReplyPreviews = e.target.checked; saveCfg();
+  });
+
+  // Tags
+  const addTagBtn = document.getElementById('s-addtag');
+  const addTagInput = document.getElementById('s-newtag');
+  function doAddTag() {
+    const v = addTagInput.value.trim();
+    if (v && !cfg.tags.includes(v)) { cfg.tags.push(v); saveCfg(); renderSettingsTags(); addTagInput.value = ''; }
+  }
+  addTagBtn.addEventListener('click', doAddTag);
+  addTagInput.addEventListener('keydown', e => { if (e.key === 'Enter') doAddTag(); });
+
+  // Filters
+  document.getElementById('f-add-btn').addEventListener('click', () => {
+    const type = document.getElementById('f-type').value;
+    const pattern = document.getElementById('f-pattern').value.trim();
+    const isRegex = document.getElementById('f-regex').checked;
+    if (!pattern) return;
+    cfg.filters.push({ type, pattern, isRegex, enabled: true });
+    saveCfg(); renderSettingsFilters();
+    document.getElementById('f-pattern').value = '';
+  });
+
+  // Data
+  document.getElementById('s-clear-history').addEventListener('click', () => {
+    if (confirm('Clear all history?')) { history = []; saveHistory(); renderSidebar(); }
+  });
+  document.getElementById('s-reset').addEventListener('click', () => {
+    if (confirm('Reset all settings to defaults?')) {
+      localStorage.removeItem('ichan_cfg');
+      cfg = { darkMode:false, hoverZoom:true, autoRefresh:false, fontSize:15, gtItalic:false,
+               highContrast:false, showReplyPreviews:true, favoriteBoards:[], tags:[], taggedThreads:{},
+               pinnedThreads:[], filters:[], corsOk:true };
+      saveCfg(); applyAll(); renderSettingsTags(); renderSettingsFilters(); renderSettingsFavs();
+    }
+  });
+
+  // Board search (sidebar)
+  const boardSearchEl = document.getElementById('board-search');
+  boardSearchEl.addEventListener('input', () => {
+    renderSidebar(boardSearchEl.value);
+  });
+
+  // Board search (main)
+  const mainSearch = document.getElementById('boards-main-search');
+  mainSearch.addEventListener('input', () => {
+    const q = mainSearch.value.toLowerCase();
+    const filtered = q
+      ? state.allBoards.filter(b =>
+          b.board.includes(q) || b.title.toLowerCase().includes(q) ||
+          (b.meta_description||'').toLowerCase().includes(q))
+      : state.allBoards;
+    renderBoardsMain(filtered);
+  });
+
+  // Sidebar tabs
+  document.querySelectorAll('.stab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.stab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      sidebarTab = tab.dataset.tab;
+      renderSidebar(boardSearchEl.value);
+    });
+  });
+
+  // Thread filters
+  let filterDebounce;
+  document.getElementById('thread-filter-input').addEventListener('input', () => {
+    clearTimeout(filterDebounce);
+    filterDebounce = setTimeout(filterAndRenderThreads, 250);
+  });
+  document.getElementById('thread-sort-select').addEventListener('change', filterAndRenderThreads);
+  document.getElementById('media-filter-select').addEventListener('change', filterAndRenderThreads);
+
+  // Refresh button
+  document.getElementById('refresh-btn').addEventListener('click', () => {
+    if (state.page === 'threads' && state.board) openBoard({board: state.board, title: state.boardTitle}, false);
+    else if (state.page === 'chat' && state.thread) openThread(state.thread, false);
+  });
+
+  // Lightbox
+  document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+  document.getElementById('lightbox').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('lightbox')) closeLightbox();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { closeLightbox(); closeSettings(); }
+  });
+
+  // If cfg was already accepted, load boards
+  if (cfg.corsOk) loadBoards();
+});
+
+// ════════════════════════════════════════════════
+// Touch / Mobile swipe to close sidebar
+// ════════════════════════════════════════════════
+let touchStartX = 0;
+document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, {passive:true});
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const sb = document.getElementById('sidebar');
+  if (window.innerWidth <= 680) {
+    if (dx < -60 && sb.classList.contains('mobile-open')) sb.classList.remove('mobile-open');
+    if (dx > 60 && !sb.classList.contains('mobile-open') && touchStartX < 30) sb.classList.add('mobile-open');
+  }
+}, {passive:true});
+</script>
 </body>
 </html>

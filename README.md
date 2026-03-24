@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/images/logo.png" alt="iChan logo" width="120">
+  <img src="assets/images/logo.png" alt="iChan logo" width="240">
 </p>
 
 <h1 align="center">iChan</h1>

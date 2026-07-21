@@ -8,9 +8,7 @@
 		<link rel="icon" href="https://s.4cdn.org/image/favicon.ico">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 		<style>
-			/* ═══════════════════════════════════════════
-   DESIGN TOKENS — Apple / SF Pro / iMessage
-════════════════════════════════════════════ */
+			
 			:root {
 				--sf: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
 				--blue: #007AFF;
@@ -88,7 +86,7 @@
 
 			#shell { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
-			/* ═══ TOPBAR ═══ */
+			/* . TOPBAR . */
 			#topbar {
 				height: var(--hh);
 				min-height: var(--hh);
@@ -128,10 +126,10 @@
 				#tb-recent { max-width: 90px; }
 			}
 
-			/* ═══ VIEW ═══ */
+			/* . VIEW . */
 			#view { flex: 1; overflow: hidden; position: relative; }
 
-			/* ═══ BOARDS PAGE ═══ */
+			/* . BOARDS PAGE . */
 			#pg-boards { height: 100%; overflow-y: auto; padding: 18px 16px 32px; }
 			#pg-boards::-webkit-scrollbar { width: 4px; }
 			#pg-boards::-webkit-scrollbar-thumb { background: var(--fill); border-radius: 2px; }
@@ -174,7 +172,7 @@
 			.bd-fav.on { color: var(--orange); }
 			.hist-del:hover { color: var(--red); }
 
-			/* ═══ CATALOG (THREADS) PAGE ═══ */
+			/* . CATALOG (THREADS) PAGE . */
 			#pg-threads { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
 			#th-filters {
 				display: flex; align-items: center; gap: 6px; padding: 8px 10px;
@@ -224,7 +222,7 @@
 			.cc-tags { position: absolute; top: 6px; left: 6px; display: flex; gap: 3px; flex-wrap: wrap; z-index: 2; }
 			.cc-tag { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 8px; background: var(--blue); color: #fff; }
 
-			/* ═══ CHAT PAGE ═══ */
+			/* . CHAT PAGE . */
 			#pg-chat { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
 			#chat-scroll { flex: 1; overflow-y: auto; padding: 10px 6px; display: flex; flex-direction: column; gap: 3px; background: var(--bg); }
 			#chat-scroll::-webkit-scrollbar { width: 4px; }
@@ -265,7 +263,7 @@
 			.msg-media { max-width: min(320px, 82vw); max-height: 340px; border-radius: var(--r-md); object-fit: contain;
 				margin-top: 5px; display: block; background: var(--fill3); min-width: 60px; min-height: 40px; }
 
-			/* ═══ GALLERY / LIGHTBOX ═══ */
+			/* . GALLERY / LIGHTBOX . */
 			#lbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.9); z-index: 9000; align-items: center; justify-content: center; }
 			#lbox.on { display: flex; }
 			#lbox-img { max-width: 90vw; max-height: 84vh; border-radius: var(--r-md); object-fit: contain; display: block; }
@@ -280,13 +278,13 @@
 				color: #fff; padding: 8px 14px; font-size: 12.5px; font-family: var(--sf); text-decoration: none; display: flex; gap: 6px; transition: background var(--tf); }
 			#lbox-dl:hover { background: rgba(255,255,255,.26); }
 
-			/* ═══ REPLY POPUP ═══ */
+			/* . REPLY POPUP . */
 			#rpop { position: fixed; display: none; background: var(--bg-elevated); border-radius: var(--r-md); box-shadow: var(--sh-lg);
 				padding: 10px 12px; max-width: 280px; z-index: 8000; pointer-events: none; border: 1px solid var(--sep); font-size: 12px; line-height: 1.4; }
 			#rpop .rp-head { font-size: 10.5px; font-weight: 700; color: var(--lbl2); margin-bottom: 4px; }
 			#rpop img { max-width: 68px; max-height: 68px; border-radius: var(--r-xs); margin-top: 5px; object-fit: cover; }
 
-			/* ═══ SETTINGS ═══ */
+			/* . SETTINGS . */
 			#s-back { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 7000; }
 			#s-back.on { display: block; }
 			#s-panel { position: fixed; top: 0; right: -400px; width: 360px; max-width: 96vw; height: 100vh; background: var(--bg-elevated);
@@ -459,9 +457,9 @@
 		</div>
 
 		<script>
-			/* ═══════════════════════════════════════
+			/* ......═
 			   CONFIG
-			═══════════════════════════════════════ */
+			......═ */
 			const PROXY = 'https://chan-proxy.anonnousmes.workers.dev/?url=';
 			const API = 'https://a.4cdn.org';
 			const CDN = 'https://i.4cdn.org';
@@ -482,9 +480,9 @@
 			};
 			const CAT_ORDER = ['Japanese Culture','Video Games','Interests','Creative','Adult','Misc','Other'];
 
-			/* ═══════════════════════════════════════
+			/* ......═
 			   STATE
-			═══════════════════════════════════════ */
+			......═ */
 			let C = {
 				dark: false, oled: false, fs: 15, gtItalic: false, contrast: false,
 				treeView: false, autoRefresh: false, showReplies: true,
@@ -498,9 +496,9 @@
 			};
 			let hist = [];
 
-			/* ═══════════════════════════════════════
+			/* ......═
 			   LAZY LOADING (img + video)
-			═══════════════════════════════════════ */
+			......═ */
 			const _obs = new Map();
 			function getObs(scrollEl) {
 				if (_obs.has(scrollEl)) return _obs.get(scrollEl);
@@ -524,9 +522,9 @@
 				container.querySelectorAll('[data-lazy], [data-lazy-src]').forEach(el => watchEl(el, scrollEl));
 			}
 
-			/* ═══════════════════════════════════════
+			/* ......═
 			   MEDIA HELPERS
-			═══════════════════════════════════════ */
+			......═ */
 			function proxied(url) { return PROXY + encodeURIComponent(url); }
 			function isVideoExt(ext) { return /\.(webm|mp4)$/i.test(ext || ''); }
 			function thumbUrl(board, tim) { return proxied(`${CDN}/${board}/${tim}s.jpg`); }
@@ -542,9 +540,9 @@
 				return `<img class="msg-media" data-lazy="${full}" data-full="${full}" alt="">`;
 			}
 
-			/* ═══════════════════════════════════════
+			/* ......═
 			   PERSIST
-			═══════════════════════════════════════ */
+			......═ */
 			function loadStore() {
 				try { const s = localStorage.getItem('ichan4'); if (s) C = { ...C, ...JSON.parse(s) }; } catch (e) {}
 				try { const h = localStorage.getItem('ichan4h'); if (h) hist = JSON.parse(h); } catch (e) {}
@@ -557,9 +555,9 @@
 				saveHist();
 			}
 
-			/* ═══════════════════════════════════════
+			/* ......═
 			   APPLY SETTINGS
-			═══════════════════════════════════════ */
+			......═ */
 			const $ = id => document.getElementById(id);
 			function applyAll() {
 				document.body.dataset.dark = C.dark ? '1' : '0';
@@ -579,18 +577,18 @@
 				document.documentElement.style.setProperty('--lbl2', C.contrast ? (C.dark ? 'rgba(235,235,245,0.9)' : 'rgba(60,60,67,0.9)') : '');
 			}
 
-			/* ═══════════════════════════════════════
+			/* ......═
 			   API
-			═══════════════════════════════════════ */
+			......═ */
 			async function get(url) {
 				const r = await fetch(PROXY + encodeURIComponent(url));
 				if (!r.ok) throw new Error('HTTP ' + r.status);
 				return r.json();
 			}
 
-			/* ═══════════════════════════════════════
+			/* ......═
 			   ROUTING / TOPBAR
-			═══════════════════════════════════════ */
+			......═ */
 			function showPage(page) {
 				$('pg-boards').style.display = page === 'boards' ? 'block' : 'none';
 				$('pg-threads').style.display = page === 'threads' ? 'flex' : 'none';
@@ -624,9 +622,9 @@
 			}
 			function goBoards() { stopAR(); showPage('boards'); }
 
-			/* ═══════════════════════════════════════
+			/* ......═
 			   BOARDS PAGE
-			═══════════════════════════════════════ */
+			......═ */
 			async function loadBoards() {
 				try {
 					const d = await get(API + '/boards.json');
@@ -705,9 +703,9 @@
 				renderFavsSettings();
 			}
 
-			/* ═══════════════════════════════════════
+			/* ......═
 			   CATALOG (THREADS)
-			═══════════════════════════════════════ */
+			......═ */
 			async function openBoard(board, nav = true) {
 				S.board = board.board;
 				S.boardTitle = board.title;
@@ -804,9 +802,9 @@
 				filterThreads();
 			}
 
-			/* ═══════════════════════════════════════
+			/* ......═
 			   CHAT
-			═══════════════════════════════════════ */
+			......═ */
 			async function openThread(thread, nav = true) {
 				S.thread = thread;
 				showPage('chat');
@@ -942,9 +940,9 @@
 				scroll.scrollTop = 0;
 			}
 
-			/* ═══════════════════════════════════════
+			/* ......═
 			   TEXT FORMATTING
-			═══════════════════════════════════════ */
+			......═ */
 			function fmtComment(html) {
 				let t = html.replace(/<br\s*\/?>/gi, '\n').replace(/<wbr>/gi, '')
 					.replace(/<a[^>]+class="quotelink"[^>]*>>>(\d+)<\/a>/gi, '>>$1')
@@ -963,9 +961,9 @@
 			function strip(h) { const d = document.createElement('div'); d.innerHTML = h; return (d.textContent || '').trim(); }
 			function esc(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
 
-			/* ═══════════════════════════════════════
+			/* ......═
 			   FILTERS
-			═══════════════════════════════════════ */
+			......═ */
 			function matchF(obj, f) {
 				let text = '';
 				if (f.type === 'name') text = obj.name || '';
@@ -976,9 +974,9 @@
 				return text.toLowerCase().includes(f.pat.toLowerCase());
 			}
 
-			/* ═══════════════════════════════════════
+			/* ......═
 			   GALLERY (accessed only via topbar icon / image tap)
-			═══════════════════════════════════════ */
+			......═ */
 			function openGallery(startNo) {
 				S.galleryList = S.chatPosts.filter(p => p.tim);
 				if (!S.galleryList.length) return;
@@ -1001,9 +999,9 @@
 			}
 			function closeLbox() { $('lbox').classList.remove('on'); $('lbox-img').src = ''; }
 
-			/* ═══════════════════════════════════════
+			/* ......═
 			   REPLY POPUP
-			═══════════════════════════════════════ */
+			......═ */
 			function showRpop(no, e) {
 				const post = S.postMap.get(no);
 				if (!post) return;
@@ -1028,9 +1026,9 @@
 				if (b) { b.style.transition = 'box-shadow .2s'; b.style.boxShadow = '0 0 0 3px rgba(0,122,255,.5)'; setTimeout(() => b.style.boxShadow = '', 900); }
 			}
 
-			/* ═══════════════════════════════════════
+			/* ......═
 			   AUTO REFRESH
-			═══════════════════════════════════════ */
+			......═ */
 			function startAR() {
 				stopAR();
 				S.arTimer = setInterval(() => {
@@ -1040,25 +1038,25 @@
 			}
 			function stopAR() { if (S.arTimer) { clearInterval(S.arTimer); S.arTimer = null; } }
 
-			/* ═══════════════════════════════════════
+			/* ......═
 			   TIME
-			═══════════════════════════════════════ */
+			......═ */
 			function fmtFull(u) {
 				const d = new Date(u * 1000);
 				return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }) + ' · ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 			}
 
-			/* ═══════════════════════════════════════
+			/* ......═
 			   UTILITY
-			═══════════════════════════════════════ */
+			......═ */
 			function errHtml(msg) {
 				return `<div class="err-msg"><i class="fa-solid fa-triangle-exclamation" style="font-size:22px;color:var(--orange);display:block;margin-bottom:8px"></i>
     Could not load data.<br><small style="color:var(--lbl3)">${esc(msg)}</small></div>`;
 			}
 
-			/* ═══════════════════════════════════════
+			/* ......═
 			   SETTINGS PANEL
-			═══════════════════════════════════════ */
+			......═ */
 			function openSettings() {
 				renderTagsS(); renderFiltersS(); renderFavsSettings(); applyAll();
 				$('s-panel').classList.add('on'); $('s-back').classList.add('on');
@@ -1086,9 +1084,9 @@
 				el.querySelectorAll('.fav-x').forEach(b => b.addEventListener('click', () => toggleFav(b.dataset.code)));
 			}
 
-			/* ═══════════════════════════════════════
+			/* ......═
 			   INIT + EVENT WIRING
-			═══════════════════════════════════════ */
+			......═ */
 			document.addEventListener('DOMContentLoaded', () => {
 				loadStore();
 				applyAll();
